@@ -70,7 +70,7 @@ const aboutBulletPoints: Array<string | { text: string; subPoints: string[] }> =
       'Part 1: Understanding the Role of Chakras and Kundalini Shakti',
       'Part 2: Shaktipat and Blossoming of The Spiritual Heart',
       'Part 3: Journey of the Atman From the Spiritual Heart to the Sahasrar',
-      'Part 4: The 3 Granthis, the Shiva-Linga & the Body of Gold'
+      'Part 4: Beyond The Veil : The Secret of The 3 Granthis, The Shiva-Lingam & The Body of Gold'
     ]
   },
   'For the first time in human history, the deepest layers of yogic evolution traditionally reserved for advanced seekers have been decoded and presented with clarity.',
@@ -337,7 +337,7 @@ export default function HomePage() {
                     <div className="space-y-2">
                       <span className="text-sky-800">{isStringPoint ? point : point.text}</span>
                       {!isStringPoint && (
-                        <ul className="ml-5 list-disc space-y-1 text-sky-700">
+                        <ul className="ml-5 list-disc space-y-1 text-sky-700 font-bold">
                           {point.subPoints.map((subPoint, subIndex) => (
                             <li key={subIndex} className="leading-6">
                               {subPoint}
