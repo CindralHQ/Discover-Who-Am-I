@@ -1,172 +1,408 @@
 import homeLogo from '@/assets/Logo.png'
-import portraitVisual from '@/assets/visuals/Santosh-Ma-Shivratri-1.png'
-import { LightboxImage } from '@/components/ui/LightboxImage'
 import { WaiIntroOverlay } from '@/components/ui/WaiIntroOverlay'
-import { themeLibrary, ThemeName } from '@/lib/designSystem'
+import { ThemeName } from '@/lib/designSystem'
+import { fetchGoogleDocContent } from '@/lib/googleDocs'
+
+type ParsedDocImage = {
+  src: string
+  alt: string
+}
+
+type DocBodyParagraph = {
+  id: string
+  html: string
+  isListItem?: boolean
+}
+
+type ParsedDocSection = {
+  id: string
+  html: string
+  images: ParsedDocImage[]
+  eyebrow?: string
+  title?: string
+  subtitle?: string
+  bodyParagraphs: DocBodyParagraph[]
+}
+
+type DocSectionCopy = Pick<ParsedDocSection, 'eyebrow' | 'title' | 'subtitle' | 'bodyParagraphs'>
 
 const ABOUT_THEME: ThemeName = 'twilight'
 
 export const metadata = { title: 'About - Who Am I' }
 
-const missionHighlights = [
-  'Preserve and share the lived experience of Kundalini awakening with clarity and humility.',
-  'Guide sincere seekers through a structured pathway that honours ancient Brahma Vidya lineages.',
-  'Offer gentle yet practical tools that keep spiritual growth grounded in daily life.'
-]
+export default async function AboutPage() {
+  const doc = await fetchGoogleDocContent()
+  const docSections = doc && doc.format === 'html' ? parseGoogleDocSections(doc.content) : []
 
-const supportHighlights = [
-  {
-    title: 'The Eight Spiritual Breaths',
-    body: "A self-study course that distils Santosh Ma's insights into an accessible daily practice for seekers of all backgrounds."
-  },
-  {
-    title: 'Guided Sangha',
-    body: 'Weekly online and in-person meditations provide a safe space to discuss experiences and receive personalised counsel.'
-  }
-]
+  const paragraphs =
+    doc && doc.format === 'txt'
+      ? doc.content
+          .split(/\r?\n\s*\r?\n/)
+          .map((paragraph) => paragraph.replace(/\r?\n/g, ' ').trim())
+          .filter(Boolean)
+      : []
 
-const awakeningHighlights = [
-  'Almost immediately, Santosh Ma found herself on a spiritual journey with visions emerging during daily meditation.',
-  'These visions were illustrated by her, mapping each phase the human body and mind traverses through awakening.',
-  'Documented with rare detail, this visual journal shares a process of evolution seldom captured in spiritual literature.'
-]
-
-function PortraitPlaceholder() {
   return (
-    <div className="relative aspect-[3/4] w-full max-w-xs overflow-hidden rounded-[2rem] border border-indigo-100 bg-gradient-to-tr from-indigo-100 via-white to-indigo-200 shadow-inner">
-      <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold uppercase tracking-[0.4em] text-indigo-400">
-        Santosh Ma
-      </span>
+    <div className="space-y-12">
+      <WaiIntroOverlay
+        theme={ABOUT_THEME}
+        icon={homeLogo}
+        label="Discover Who Am I"
+        size="hero"
+        applyBodyTint={false}
+      />
+
+      <section className="space-y-4 rounded-3xl border border-indigo-100 bg-white/90 p-8 shadow-sm">
+
+        {doc ? (
+          doc.format === 'html' ? (
+            docSections.length > 0 ? (
+              <div className="space-y-8">
+                {docSections.map((section, index) => (
+                  <DocSectionBlock key={section.id} section={section} index={index} />
+                ))}
+              </div>
+            ) : (
+              <article className="doc-article">
+                {/* eslint-disable-next-line react/no-danger */}
+                <div dangerouslySetInnerHTML={{ __html: sanitizeGoogleDocHtml(doc.content) }} />
+              </article>
+            )
+          ) : (
+            <article className="space-y-4 text-lg leading-8 text-indigo-800">
+              {paragraphs.map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
+              ))}
+            </article>
+          )
+        ) : (
+          <div className="rounded-2xl border border-dashed border-indigo-200 bg-indigo-50/60 p-6 text-indigo-700">
+            <p className="font-semibold">No Google Doc configured yet.</p>
+            <p className="mt-1 text-sm leading-6">
+              Set <code className="font-mono text-indigo-900">GOOGLE_DOCS_ABOUT_ID</code> (and optional format/revalidate
+              vars) to stream content directly from your document.
+            </p>
+          </div>
+        )}
+      </section>
     </div>
   )
 }
 
-export default function About() {
-  const palette = themeLibrary[ABOUT_THEME].classes
-  const headingClass = palette.card.title
+function DocSectionBlock({ section, index }: { section: ParsedDocSection; index: number }) {
+  const hasImages = section.images.length > 0
+  const reverseLayout = hasImages && index % 2 === 1
+  const hasStructuredCopy =
+    Boolean(section.title || section.subtitle || section.eyebrow) || section.bodyParagraphs.length > 0
+
+  const copyContent = hasStructuredCopy ? (
+    <div className="space-y-3">
+      {section.eyebrow ? (
+        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-indigo-400">{section.eyebrow}</p>
+      ) : null}
+      {section.title ? (
+        <h2 className="text-3xl font-semibold tracking-tight text-indigo-900">{section.title}</h2>
+      ) : null}
+      {section.subtitle ? (
+        <div
+          className="text-xl font-semibold leading-tight text-indigo-900"
+          dangerouslySetInnerHTML={{ __html: section.subtitle }}
+        />
+      ) : null}
+      {section.bodyParagraphs.length > 0 ? (
+        <div className="space-y-2 text-base leading-6 text-indigo-800">
+          {section.bodyParagraphs.map((paragraph) =>
+            paragraph.isListItem ? (
+              <div key={`${section.id}-${paragraph.id}`} className="flex gap-2 text-base leading-6">
+                <span className="mt-2 h-2 w-2 rounded-full bg-indigo-400" />
+                <p className="leading-6" dangerouslySetInnerHTML={{ __html: paragraph.html }} />
+              </div>
+            ) : (
+              <p
+                key={`${section.id}-${paragraph.id}`}
+                className="leading-6"
+                dangerouslySetInnerHTML={{ __html: paragraph.html }}
+              />
+            )
+          )}
+        </div>
+      ) : null}
+    </div>
+  ) : (
+    <article className="doc-article">
+      {/* eslint-disable-next-line react/no-danger */}
+      <div dangerouslySetInnerHTML={{ __html: section.html }} />
+    </article>
+  )
+
+  if (!hasImages) {
+    return (
+      <section className="rounded-3xl border border-indigo-100 bg-white/90 p-8 shadow-sm">
+        {copyContent}
+      </section>
+    )
+  }
 
   return (
-    <div className="space-y-16">
-      <WaiIntroOverlay theme={ABOUT_THEME} icon={homeLogo} label="Discover Who Am I" size="hero" applyBodyTint={false} />
-      <section className="text-indigo-800">
-        <p className="text-sm font-medium uppercase tracking-[0.4em] text-indigo-400">About</p>
-        <h1
-          className={`mt-2 mb-3 text-4xl font-semibold tracking-tight ${headingClass} md:text-5xl`}
-        >
-          Discover Who Am I
-        </h1>
-        <p className="max-w-3xl text-base leading-7 text-indigo-500">
-          Discover Who Am I is guided by Santosh Ma (Santosh Sachdeva), whose direct Kundalini awakening in 1995
-          opened a lifetime of surrender to Higher Forces. Her journey continues to illuminate the teachings we
-          share with seekers across the world.
-        </p>
-      </section>
-
-      <section className="grid gap-10 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:items-start">
-        <div className="space-y-6 rounded-3xl border border-indigo-100 bg-white p-8 shadow-sm">
-          <header className="space-y-2">
-            <h3 className={`text-2xl font-semibold ${headingClass}`}>
-              Santosh Ma&apos;s Spiritual Awakening Has Been Unique
-            </h3>
-            <p className={`text-base leading-7 ${palette.muted}`}>
-              The question surfaced in her mind:
-              <br />
-              Who am I? Where do I come from? Where am I going?
-            </p>
-          </header>
-          <ul className={`space-y-3 text-base leading-7 ${palette.muted}`}>
-            {awakeningHighlights.map((item, index) => (
-              <li key={index} className="flex gap-3">
-                <span className="mt-2 h-2 w-2 rounded-full bg-indigo-400" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
+    <section className="rounded-3xl border border-indigo-100 bg-white/95 p-6 shadow-sm md:p-10">
+      <div
+        className={`flex flex-col gap-8 md:items-center ${
+          reverseLayout ? 'md:flex-row-reverse' : 'md:flex-row'
+        }`}
+      >
+        <div className="flex-1">
+          {copyContent}
         </div>
-        <LightboxImage
-          src={portraitVisual}
-          alt="Portrait of Santosh Ma during her spiritual practice"
-          title="Santosh Ma's Awakening"
-          description="Santosh Ma in deep spiritual practice, reflecting the inner inquiry that sparked the Who Am I series' detailed awakening account."
-          className="aspect-[4/3] w-full max-w-xl overflow-hidden rounded-3xl border border-indigo-100 text-left shadow-md hover:shadow-lg"
-          imageClassName="object-cover object-top"
-          sizes="(min-width: 1280px) 480px, (min-width: 768px) 40vw, 100vw"
-        />
-      </section>
-
-      <section className="grid gap-10 rounded-3xl border border-indigo-100 bg-white p-8 shadow-sm md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
-        <div className="space-y-4">
-          <h2 className={`text-3xl font-semibold tracking-tight ${headingClass}`}>
-            Santosh Ma&apos;s Path
-          </h2>
-          <p className={`text-base leading-7 ${palette.muted}`}>
-            Santosh Ma immersed herself in Brahma Vidya under Justice M. L. Dudhat in 1995. The initiation ignited an
-            enduring relationship with Kundalini energy, chronicled through the Kundalini Trilogy—<em>
-              Kundalini: A Gentle Force
-            </em>
-            , <em>Kundalini Diary</em>, and <em>Kundalini Awakening</em>. These texts present rare illustrated detail on
-            the unfolding of subtle consciousness and continue to guide students navigating their own inner ascent.
-          </p>
-          <p className={`text-base leading-7 ${palette.muted}`}>
-            With more than ten titles authored, she bridges ancient transmissions and contemporary seekers. Her work
-            demystifies profound experiences, encouraging practitioners to trust their journey while staying grounded in
-            daily life.
-          </p>
-        </div>
-        <div className="flex items-start justify-center md:justify-end">
-          <PortraitPlaceholder />
-        </div>
-      </section>
-
-      <section className="space-y-6">
-        <div className="rounded-3xl bg-gradient-to-br from-indigo-50 via-white to-indigo-50 p-8 ring-1 ring-indigo-100/70">
-          <h3 className={`text-2xl font-semibold ${headingClass}`}>Mission</h3>
-          <p className="mt-3 text-base leading-7 text-indigo-700">
-            The heart of Discover Who Am I is to share lived wisdom with tenderness and structure so every seeker feels
-            held on their path. These guiding principles keep our work authentic and human.
-          </p>
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {missionHighlights.map((point, index) => (
-              <div
-                key={index}
-                className="rounded-2xl border border-indigo-100 bg-white/80 p-5 shadow-sm backdrop-blur-sm"
-              >
-                <span className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-400">
-                  Pillar {String(index + 1).padStart(2, '0')}
-                </span>
-                <p className="mt-3 text-base leading-7 text-indigo-800">{point}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <h2 className={`text-3xl font-semibold tracking-tight ${headingClass}`}>
-          How We Support Seekers
-        </h2>
-        <div className="grid gap-6 md:grid-cols-3">
-          {supportHighlights.map((item, index) => (
-            <div
-              key={index}
-              className="flex flex-col gap-3 rounded-3xl border border-indigo-100 bg-white p-6 shadow-sm"
+        <div className="flex flex-1 flex-col gap-5">
+          {section.images.map((image, imageIndex) => (
+            <figure
+              key={`${section.id}-image-${imageIndex}`}
+              className="overflow-hidden rounded-[32px] border border-indigo-100 bg-gradient-to-br from-white to-indigo-50 shadow-lg"
             >
-              <h3 className={`text-lg font-semibold ${headingClass}`}>{item.title}</h3>
-              <p className="text-base leading-7 text-indigo-700">{item.body}</p>
-            </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={image.src}
+                alt={image.alt}
+                loading="lazy"
+                className="h-auto w-full max-h-64 object-contain md:max-h-72 lg:max-h-80"
+                decoding="async"
+              />
+            </figure>
           ))}
         </div>
-      </section>
-
-      <section className="rounded-3xl bg-indigo-50 p-8 text-base leading-7 text-indigo-800 ring-1 ring-indigo-100/70">
-        <h2 className={`text-2xl font-semibold ${headingClass}`}>Stay Connected</h2>
-        <p className="mt-3 text-indigo-800">
-          Santosh Ma hosts ongoing mentoring circles where questions on meditation, chakras, and Kundalini are met
-          with warmth and clarity. Learn more about The Eight Spiritual Breaths at{' '}
-          <a href="https://www.eightspiritualbreaths.com" rel="noopener noreferrer" target="_blank" className="font-semibold text-indigo-600 underline decoration-indigo-400 hover:text-indigo-700">
-            eightspiritualbreaths.com
-          </a>
-          .
-        </p>
-      </section>
-    </div>
+      </div>
+    </section>
   )
+}
+
+function parseGoogleDocSections(rawHtml: string): ParsedDocSection[] {
+  const sanitized = sanitizeGoogleDocHtml(rawHtml)
+  const rawSections = sanitized.split(/<hr[^>]*>/i)
+
+  return rawSections
+    .map((fragment, index) => {
+      let workingHtml = fragment.trim()
+      if (!workingHtml) return null
+
+      const imageRegex = /<img[^>]*src="([^"]+)"[^>]*>/gi
+      const images: ParsedDocImage[] = []
+      const matches = [...workingHtml.matchAll(imageRegex)]
+
+      matches.forEach((match, imageIndex) => {
+        const src = decodeHtmlEntities(match[1])
+        if (!src) return
+        const altMatch = match[0].match(/alt="([^"]*)"/i)
+        const altText = decodeHtmlEntities(altMatch?.[1] ?? '').trim()
+        images.push({
+          src,
+          alt: altText && altText.length > 0 ? altText : `Section visual ${index + 1}-${imageIndex + 1}`
+        })
+        workingHtml = workingHtml.replace(match[0], '')
+      })
+
+      workingHtml = workingHtml
+        .replace(/<span[^>]*>\s*<\/span>/gi, '')
+        .replace(/<p[^>]*>(?:\s|&nbsp;)*<\/p>/gi, '')
+        .replace(/&nbsp;/gi, ' ')
+        .trim()
+
+      if (!workingHtml && images.length === 0) return null
+
+      const copy = extractSectionCopy(workingHtml)
+
+      return {
+        id: `doc-section-${index}`,
+        html: workingHtml,
+        images,
+        ...copy
+      }
+    })
+    .filter((section): section is ParsedDocSection => Boolean(section))
+}
+
+function sanitizeGoogleDocHtml(html: string) {
+  return html
+    .replace(/<!DOCTYPE[\s\S]*?>/gi, '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<head[\s\S]*?<\/head>/gi, '')
+    .replace(/<\/?(html|body)[^>]*>/gi, '')
+    .trim()
+}
+
+type ParagraphContent = {
+  text: string
+  html: string
+  isListItem: boolean
+}
+
+function extractSectionCopy(html: string): DocSectionCopy {
+  const blockRegex = /<(p|li)[^>]*>([\s\S]*?)<\/(p|li)>/gi
+  const paragraphs: ParagraphContent[] = []
+  let match: RegExpExecArray | null = null
+  while ((match = blockRegex.exec(html)) !== null) {
+    const blockType = match[1]?.toLowerCase()
+    const inlineHtml = sanitizeInlineHtml(match[2] ?? '')
+    let text = decodeHtmlEntities(stripHtmlTags(inlineHtml))
+    text = normalizeSentenceSpacing(text)
+    if (!text) continue
+    const isListItem = blockType === 'li'
+    paragraphs.push({
+      text,
+      html: inlineHtml,
+      isListItem
+    })
+  }
+
+  const headingLines: ParagraphContent[] = []
+  const bodyParagraphs: ParagraphContent[] = []
+  let headingPhase = true
+  for (const paragraph of paragraphs) {
+    if (headingPhase && isHeadingCandidate(paragraph.text, headingLines.length)) {
+      headingLines.push(paragraph)
+      continue
+    }
+    headingPhase = false
+    bodyParagraphs.push(paragraph)
+  }
+
+  if (headingLines.length === 0 && bodyParagraphs.length > 0) {
+    headingLines.push(bodyParagraphs.shift() ?? { text: '', html: '', isListItem: false })
+  }
+
+  const headingMeta = classifyHeadingLines(headingLines.filter((line) => Boolean(line.text)))
+
+  const normalizedBody = normalizeBodyParagraphs(bodyParagraphs)
+
+  return {
+    bodyParagraphs: normalizedBody,
+    ...headingMeta
+  }
+}
+
+function stripHtmlTags(input: string) {
+  return input.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, ' ')
+}
+
+const NAMED_ENTITY_MAP: Record<string, string> = {
+  '&nbsp;': ' ',
+  '&amp;': '&',
+  '&quot;': '"',
+  '&apos;': "'",
+  '&lt;': '<',
+  '&gt;': '>',
+  '&lsquo;': '‘',
+  '&rsquo;': '’',
+  '&ldquo;': '“',
+  '&rdquo;': '”',
+  '&hellip;': '…',
+  '&mdash;': '—',
+  '&ndash;': '–',
+  '&bull;': '•'
+}
+
+function decodeHtmlEntities(input: string) {
+  if (!input) return ''
+  return input
+    .replace(/&#(\d+);/g, (_, code) => {
+      const parsed = Number.parseInt(code, 10)
+      return Number.isFinite(parsed) ? String.fromCharCode(parsed) : _
+    })
+    .replace(/&#x([\da-f]+);/gi, (_, code) => {
+      const parsed = Number.parseInt(code, 16)
+      return Number.isFinite(parsed) ? String.fromCharCode(parsed) : _
+    })
+    .replace(/&[a-z]+;/gi, (entity) => NAMED_ENTITY_MAP[entity.toLowerCase()] ?? entity)
+}
+
+function normalizeSentenceSpacing(input: string) {
+  return input
+    .replace(/\s+/g, ' ')
+    .replace(/\s+([,;:!?])/g, '$1')
+    .replace(/([([])\s+/g, '$1')
+    .replace(/\s+([)\]])/g, '$1')
+    .trim()
+}
+
+function isHeadingCandidate(text: string, headingCount: number) {
+  if (headingCount >= 3) return false
+  if (text.length > 120) return false
+  if (text.startsWith('•')) return false
+  if (/^\d/.test(text)) return false
+  return true
+}
+
+function classifyHeadingLines(lines: ParagraphContent[]): Pick<ParsedDocSection, 'eyebrow' | 'title' | 'subtitle'> {
+  if (lines.length === 0) {
+    return {}
+  }
+  const [first, second, ...rest] = lines
+  const firstIsEyebrow = Boolean(second) && isEyebrowCandidate(first.text)
+
+  if (firstIsEyebrow && second) {
+    return {
+      eyebrow: first.text,
+      title: second.text,
+      subtitle: rest.length > 0 ? rest.map((line) => line.html).join('<br />') : undefined
+    }
+  }
+
+  return {
+    title: first.text,
+    subtitle:
+      [second, ...rest]
+        .map((line) => line?.html ?? '')
+        .filter(Boolean)
+        .join('<br />') || undefined
+  }
+}
+
+function isEyebrowCandidate(value: string) {
+  const trimmed = value.replace(/\s+/g, ' ').trim()
+  const letters = trimmed.replace(/[^A-Za-z]/g, '')
+  if (!letters) return false
+  return trimmed === trimmed.toUpperCase()
+}
+
+function normalizeBodyParagraphs(paragraphs: ParagraphContent[]): DocBodyParagraph[] {
+  return paragraphs.map((paragraph, index) => ({
+    id: `body-paragraph-${index}`,
+    html: paragraph.html,
+    isListItem: paragraph.isListItem
+  }))
+}
+
+function sanitizeInlineHtml(input: string, allowLinks = true): string {
+  if (!input) return ''
+  let output = input
+  output = output.replace(/<br\s*\/?>/gi, '<br />')
+  output = output.replace(/<\/?(span|font|div|section|article|style)[^>]*>/gi, '')
+
+  if (allowLinks) {
+    output = output.replace(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi, (_, attrs, inner) => {
+      const hrefMatch = attrs.match(/href=(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i)
+      const href = hrefMatch ? hrefMatch[1] ?? hrefMatch[2] ?? hrefMatch[3] ?? '' : ''
+      const safeHref = sanitizeUrl(decodeHtmlEntities(href))
+      const sanitizedInner = sanitizeInlineHtml(inner, false)
+      if (!safeHref) {
+        return sanitizedInner
+      }
+      return `<a href="${safeHref}" target="_blank" rel="noopener noreferrer">${sanitizedInner}</a>`
+    })
+  }
+
+  output = output.replace(/<(strong|b|em|i|u|sub|sup|code)\b[^>]*>/gi, '<$1>')
+  output = output.replace(/<\/(strong|b|em|i|u|sub|sup|code)>/gi, '</$1>')
+  output = output.replace(/<\/?(?!strong|b|em|i|u|sub|sup|code|br|a\b)[a-z][^>]*>/gi, '')
+
+  return output.trim()
+}
+
+function sanitizeUrl(url: string) {
+  const trimmed = url.trim()
+  if (!trimmed) return ''
+  if (/^(https?:|mailto:)/i.test(trimmed)) {
+    return trimmed
+  }
+  return ''
 }
