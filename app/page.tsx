@@ -471,7 +471,7 @@ export default function HomePage() {
 
       <section className="grid gap-10 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:items-center">
         <div className="">
-          <h2 className="text-2xl font-semibold text-amber-900">Why You Must Watch This Now</h2>
+          <h2 className="text-2xl font-semibold text-amber-900 mb-4">Why You Must Watch This Now</h2>
           <ul className="space-y-2 text-base leading-7 text-amber-800">
             {whyNow.map((item, index) => (
               <li key={index} className="flex gap-3">
@@ -574,12 +574,12 @@ export default function HomePage() {
           })}
         </div>
       </section>
-        <section className="space-y-6 rounded-3xl border border-indigo-100 bg-white p-8 shadow-sm">
+        <section className="space-y-0 rounded-3xl border border-indigo-100 bg-white p-8 shadow-sm">
           <header className="space-y-2">
             <h2 className={`text-3xl font-semibold tracking-tight ${headingClass}`}>
               Your Journey of Discover Who Am I ; Liberation Through Seeing
             </h2>
-            <p className={`text-base leading-7 ${palette.muted}`}>
+            <p className={`text-base leading-7 text-sky-500`}>
               Move through each part with the spaciousness it deserves while staying rooted in consistent practice.
             </p>
           </header>

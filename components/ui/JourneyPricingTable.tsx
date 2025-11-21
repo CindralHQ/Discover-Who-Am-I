@@ -53,7 +53,7 @@ export function JourneyPricingTable({ schedule, pacing, reminders }: JourneyPric
         ))}
       </div>
 
-      <div className="space-y-3 text-base leading-7 text-sky-600">
+      <div className="space-y-3 text-base leading-7 text-sky-500">
         {reminders.map((message, index) => (
           <p key={index}>{message}</p>
         ))}
