@@ -149,9 +149,7 @@ export default function AboutPage() {
       <section className="space-y-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm">
         <div className="grid gap-8 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:items-center">
           <div className="space-y-6">
-            <figure className="rounded-[32px] border border-sky-100 bg-gradient-to-br from-white to-sky-50 p-4 shadow-sm">
-              <Image src={liberationVisual} alt="Liberation artwork representing the senses opening to light" className="h-auto w-full rounded-2xl object-cover" />
-            </figure>
+
             <div className="space-y-3 rounded-[32px] border border-sky-100 bg-sky-50/70 p-5 shadow-inner">
               {thongdrolSenses.map((item) => (
                 <p key={item.title} className="text-base font-semibold text-sky-900">
