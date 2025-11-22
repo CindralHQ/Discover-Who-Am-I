@@ -3,6 +3,7 @@ import Image, { type StaticImageData } from 'next/image'
 import { ButtonLink } from '@/components/ui/Button'
 import { Quote } from '@/components/ui/Quote'
 import { ThemeName, themeLibrary } from '@/lib/designSystem'
+import { buildWooCheckoutUrl } from '@/lib/woocommerce'
 import { ChakraNav } from '@/components/ui/ChakraNav'
 import { EnrollBlock } from '@/components/ui/EnrollBlock'
 import { WaiIntroOverlay } from '@/components/ui/WaiIntroOverlay'
@@ -18,7 +19,8 @@ import whyWatchVisual from '@/assets/visuals/Kundalini-Serpant.png'
 import quoteVisual from '@/assets/visuals/Boat-And-Sun.jpeg'
 
 const THEME: ThemeName = 'manipura'
-const ENROLL_URL = 'https://discoverwhoami.com/?add-to-cart=2462&quantity=1&redirect_to_checkout=true'
+const WAI_ONE_PRODUCT_ID = 2462
+const ENROLL_URL = buildWooCheckoutUrl(WAI_ONE_PRODUCT_ID)
 
 type VisualAsset = { src: StaticImageData; alt: string }
 

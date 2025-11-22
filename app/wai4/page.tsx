@@ -3,6 +3,7 @@ import Image, { type StaticImageData } from 'next/image'
 import { ButtonLink } from '@/components/ui/Button'
 import { Quote } from '@/components/ui/Quote'
 import { ThemeName, themeLibrary } from '@/lib/designSystem'
+import { buildWooCheckoutUrl } from '@/lib/woocommerce'
 import { ChakraNav } from '@/components/ui/ChakraNav'
 import { EnrollBlock } from '@/components/ui/EnrollBlock'
 import { WaiIntroOverlay } from '@/components/ui/WaiIntroOverlay'
@@ -18,7 +19,8 @@ import whyWatchVisual from '@/assets/visuals/Pathway-To-Light.png'
 import quoteVisual from '@/assets/visuals/Sahasrar-Blossoming.png'
 
 const THEME: ThemeName = 'sahasrara'
-const ENROLL_URL = 'https://discoverwhoami.com/?add-to-cart=2466&quantity=1&redirect_to_checkout=true'
+const WAI_FOUR_PRODUCT_ID = 2466
+const ENROLL_URL = buildWooCheckoutUrl(WAI_FOUR_PRODUCT_ID)
 
 type VisualAsset = { src: StaticImageData; alt: string }
 
