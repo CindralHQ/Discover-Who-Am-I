@@ -234,14 +234,15 @@ type ParagraphContent = {
   text: string
   html: string
   isListItem: boolean
+  tagName: string
 }
 
 function extractSectionCopy(html: string): DocSectionCopy {
-  const blockRegex = /<(p|li)[^>]*>([\s\S]*?)<\/(p|li)>/gi
+  const blockRegex = /<(p|li|h[1-6])[^>]*>([\s\S]*?)<\/\1>/gi
   const paragraphs: ParagraphContent[] = []
   let match: RegExpExecArray | null = null
   while ((match = blockRegex.exec(html)) !== null) {
-    const blockType = match[1]?.toLowerCase()
+    const blockType = match[1]?.toLowerCase() ?? ''
     const inlineHtml = sanitizeInlineHtml(match[2] ?? '')
     let text = decodeHtmlEntities(stripHtmlTags(inlineHtml))
     text = normalizeSentenceSpacing(text)
@@ -250,7 +251,8 @@ function extractSectionCopy(html: string): DocSectionCopy {
     paragraphs.push({
       text,
       html: inlineHtml,
-      isListItem
+      isListItem,
+      tagName: blockType
     })
   }
 
@@ -258,7 +260,7 @@ function extractSectionCopy(html: string): DocSectionCopy {
   const bodyParagraphs: ParagraphContent[] = []
   let headingPhase = true
   for (const paragraph of paragraphs) {
-    if (headingPhase && isHeadingCandidate(paragraph.text, headingLines.length)) {
+    if (headingPhase && isHeadingCandidate(paragraph, headingLines)) {
       headingLines.push(paragraph)
       continue
     }
@@ -267,7 +269,9 @@ function extractSectionCopy(html: string): DocSectionCopy {
   }
 
   if (headingLines.length === 0 && bodyParagraphs.length > 0) {
-    headingLines.push(bodyParagraphs.shift() ?? { text: '', html: '', isListItem: false })
+    headingLines.push(
+      bodyParagraphs.shift() ?? { text: '', html: '', isListItem: false, tagName: 'p' }
+    )
   }
 
   const headingMeta = classifyHeadingLines(headingLines.filter((line) => Boolean(line.text)))
@@ -324,8 +328,22 @@ function normalizeSentenceSpacing(input: string) {
     .trim()
 }
 
-function isHeadingCandidate(text: string, headingCount: number) {
+const HEADING_TAGS = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
+
+function isHeadingCandidate(paragraph: ParagraphContent, headingLines: ParagraphContent[]) {
+  const headingCount = headingLines.length
   if (headingCount >= 3) return false
+  const headingTagCount = headingLines.filter((line) => HEADING_TAGS.has(line.tagName)).length
+  const hasHeadingTag = headingTagCount > 0
+  const isHeadingTag = HEADING_TAGS.has(paragraph.tagName)
+
+  if (isHeadingTag) return true
+
+  if (hasHeadingTag) {
+    return false
+  }
+
+  const text = paragraph.text
   if (text.length > 120) return false
   if (text.startsWith('•')) return false
   if (/^\d/.test(text)) return false
