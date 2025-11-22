@@ -1,5 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
+import { cookies } from 'next/headers'
 import { BackgroundAudio } from '@/components/ui/BackgroundAudio'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/ui/Header'
@@ -7,6 +8,7 @@ import { PageFade } from '@/components/ui/PageFade'
 import { ImageLightboxProvider } from '@/components/ui/ImageLightbox'
 import { ContentProtectionLayer } from '@/components/ui/ContentProtectionLayer'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { LEARNPRESS_USER_COOKIE, parseLearnPressUserCookie } from '@/lib/learnpress'
 
 const deploymentHost =
   process.env.NEXT_PUBLIC_SITE_URL ??
@@ -60,6 +62,9 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const cookieStore = cookies()
+  const learnPressUser = parseLearnPressUserCookie(cookieStore.get(LEARNPRESS_USER_COOKIE)?.value)
+
   return (
     <html lang="en">
       <head>
@@ -71,7 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <BackgroundAudio />
         <ContentProtectionLayer />
-        <Header />
+        <Header user={learnPressUser} />
         <main className="px-4 pb-10 sm:px-6 lg:px-8">
           <ImageLightboxProvider>
             <PageFade>{children}</PageFade>

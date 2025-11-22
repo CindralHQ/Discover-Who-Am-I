@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { themeLibrary, ThemeName } from '@/lib/designSystem'
+import type { LearnPressUserPayload } from '@/lib/learnpress'
 import { Nav } from '@/components/Nav'
 
 function cx(...classes: Array<string | false | null | undefined>) {
@@ -13,9 +14,10 @@ type HeaderProps = {
   theme?: ThemeName
   className?: string
   sticky?: boolean
+  user?: LearnPressUserPayload | null
 }
 
-export function Header({ theme = 'twilight', className, sticky = true }: HeaderProps) {
+export function Header({ theme = 'twilight', className, sticky = true, user }: HeaderProps) {
   const { text, surface } = themeLibrary[theme].classes
   const pathname = usePathname()
   const isHome = pathname === '/'
@@ -33,7 +35,7 @@ export function Header({ theme = 'twilight', className, sticky = true }: HeaderP
         <Link href="/" className={cx('text-lg font-semibold tracking-tight', text)}>
           Discover Who Am I
         </Link>
-        <Nav theme={theme} />
+        <Nav theme={theme} user={user} />
       </div>
     </header>
   )

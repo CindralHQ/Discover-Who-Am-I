@@ -1,9 +1,11 @@
 import Image, { type StaticImageData } from 'next/image'
+import { cookies } from 'next/headers'
 
 import { ButtonLink } from '@/components/ui/Button'
 import { Quote } from '@/components/ui/Quote'
 import { ThemeName, themeLibrary } from '@/lib/designSystem'
 import { buildWooCheckoutUrl } from '@/lib/woocommerce'
+import { LEARNPRESS_TOKEN_COOKIE, userHasCourseAccess } from '@/lib/learnpress'
 import { ChakraNav } from '@/components/ui/ChakraNav'
 import { EnrollBlock } from '@/components/ui/EnrollBlock'
 import { WaiIntroOverlay } from '@/components/ui/WaiIntroOverlay'
@@ -109,7 +111,17 @@ const uniqueCardStyles = {
 
 export const metadata = { title: 'Who Am I - Part 3' }
 
-export default function WaiThreePage() {
+export default async function WaiThreePage() {
+  const cookieStore = cookies()
+  const authToken = cookieStore.get(LEARNPRESS_TOKEN_COOKIE)?.value
+  const hasCourseAccess = authToken
+    ? await userHasCourseAccess(
+        ['wai part 3', 'who am i - part iii', 'part iii', 'part 3', 'wai3'],
+        authToken
+      )
+    : false
+  const primaryCtaHref = hasCourseAccess ? '/my-courses' : ENROLL_URL
+  const primaryCtaLabel = hasCourseAccess ? 'Continue Learning' : 'Enroll Now'
   const palette = themeLibrary[THEME].classes
   const headingClass = palette.card.title
 
@@ -146,8 +158,8 @@ export default function WaiThreePage() {
             </p>
             <ChakraNav active="wai3" />
             <div className="flex flex-wrap gap-3">
-              <ButtonLink theme={THEME} size="lg" href={ENROLL_URL}>
-                Enroll Now
+              <ButtonLink theme={THEME} size="lg" href={primaryCtaHref}>
+                {primaryCtaLabel}
               </ButtonLink>
             </div>
           </div>
@@ -306,7 +318,8 @@ export default function WaiThreePage() {
             </p>
           </>
         }
-        buttonHref={ENROLL_URL}
+        buttonHref={primaryCtaHref}
+        buttonLabel={primaryCtaLabel}
       />
         </div>
       </div>

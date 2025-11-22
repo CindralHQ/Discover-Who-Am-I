@@ -34,7 +34,7 @@ export default async function WooCommerceTestPage() {
           credentials in <code className="font-mono text-indigo-900">.env.local</code> are configured correctly.
         </p>
         <ul className="text-sm text-indigo-700">
-          <li>• Set <code className="font-mono text-indigo-900">WC_STORE_URL</code> to your WordPress site URL.</li>
+          <li>• Set <code className="font-mono text-indigo-900">WC_STORE_URL</code> to your storefront URL.</li>
           <li>• Provide REST API credentials via <code className="font-mono text-indigo-900">WC_CONSUMER_KEY</code> and{' '}
             <code className="font-mono text-indigo-900">WC_CONSUMER_SECRET</code>.
           </li>
@@ -52,7 +52,7 @@ export default async function WooCommerceTestPage() {
           <div className="rounded-2xl border border-dashed border-indigo-200 bg-indigo-50/70 p-6 text-indigo-700">
             <p className="font-semibold">No products returned yet.</p>
             <p className="mt-1 text-sm leading-6">
-              Add a product inside WordPress → WooCommerce or relax the filters in{' '}
+              Add a product inside WooCommerce or relax the filters in{' '}
               <code className="font-mono text-indigo-900">fetchWooProducts()</code>.
             </p>
           </div>
