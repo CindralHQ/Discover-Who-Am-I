@@ -9,6 +9,7 @@ import { ImageLightboxProvider } from '@/components/ui/ImageLightbox'
 import { ContentProtectionLayer } from '@/components/ui/ContentProtectionLayer'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { LEARNPRESS_USER_COOKIE, parseLearnPressUserCookie } from '@/lib/learnpress'
+import { CookieBanner } from '@/components/ui/CookieBanner'
 
 const deploymentHost =
   process.env.NEXT_PUBLIC_SITE_URL ??
@@ -84,6 +85,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </main>
         <Footer />
         <SpeedInsights />
+        <CookieBanner />
       </body>
     </html>
   )
