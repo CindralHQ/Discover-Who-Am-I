@@ -15,9 +15,9 @@ type EnrollBlockProps = {
 const gradientByTheme: Record<ThemeName, string> = {
   lotus: 'from-rose-500 via-rose-600 to-rose-700',
   manipura: 'from-orange-500 via-orange-600 to-amber-600',
-  twilight: 'from-indigo-500 via-indigo-600 to-slate-700',
+  twilight: 'from-sky-500 via-sky-600 to-slate-700',
   anahata: 'from-emerald-500 via-emerald-600 to-emerald-700',
-  vishuddha: 'from-sky-500 via-indigo-500 to-blue-600',
+  vishuddha: 'from-sky-500 via-sky-500 to-blue-600',
   sahasrara: 'from-violet-600 via-violet-700 to-purple-900 shadow-[0_0_32px_rgba(245,197,53,0.45)]'
 }
 

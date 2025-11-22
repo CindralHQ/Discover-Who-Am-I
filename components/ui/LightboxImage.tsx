@@ -42,7 +42,7 @@ export function LightboxImage({
         })
       }
       className={cx(
-        'group relative block overflow-hidden text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500',
+        'group relative block overflow-hidden text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500',
         className
       )}
     >

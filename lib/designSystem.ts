@@ -97,15 +97,15 @@ export const themeLibrary: Record<ThemeName, ThemeDefinition> = {
     }
   },
   twilight: {
-    label: 'Twilight Indigo',
-    description: 'Deep indigo gradients mirroring dusk reflections.',
+    label: 'Twilight Sky',
+    description: 'Deep sky gradients mirroring dusk reflections.',
     classes: {
       surface: 'bg-sky-50',
       text: 'text-sky-900',
       muted: 'text-sky-600',
       quote: {
         wrapper:
-          'bg-gradient-to-br from-sky-50 via-white to-sky-100/70 border border-sky-200/70 shadow-lg shadow-black/10 ring-1 ring-sky-100/60',
+          'bg-gradient-to-br from-sky-50 via-white to-sky-100/60 border border-sky-200/70 shadow-lg shadow-black/10 ring-1 ring-sky-100/60',
         accent: 'text-sky-600',
         author: 'text-sky-700'
       },

@@ -574,7 +574,7 @@ export default function HomePage() {
           })}
         </div>
       </section>
-        <section className="space-y-0 rounded-3xl border border-indigo-100 bg-white p-8 shadow-sm">
+        <section className="space-y-0 rounded-3xl border border-sky-100 bg-white p-8 shadow-sm">
           <header className="space-y-2">
             <h2 className={`text-3xl font-semibold tracking-tight ${headingClass}`}>
               Your Journey of Discover Who Am I ; Liberation Through Seeing

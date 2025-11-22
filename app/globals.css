@@ -14,18 +14,18 @@ body { @apply bg-white text-slate-900 antialiased overflow-x-hidden; }
 .prose h2 { @apply text-3xl font-semibold mt-12 mb-4; }
 .prose h3 { @apply text-xl font-semibold mt-8 mb-3; }
 
-.doc-article { @apply space-y-4 text-indigo-900; }
+.doc-article { @apply space-y-4 text-sky-900; }
 .doc-article * { text-align: left !important; }
-.doc-article p { @apply text-base leading-7 text-indigo-900; }
+.doc-article p { @apply text-base leading-7 text-sky-900; }
 .doc-article p + p { @apply mt-2; }
 .doc-article ul,
-.doc-article ol { @apply my-4 pl-6 text-indigo-900; }
+.doc-article ol { @apply my-4 pl-6 text-sky-900; }
 .doc-article ul { list-style: disc; }
 .doc-article ol { list-style: decimal; }
 .doc-article li { @apply my-1; }
-.doc-article a { @apply text-indigo-600 underline decoration-indigo-400 font-semibold; }
-.doc-article strong { @apply font-semibold text-indigo-900; }
-.doc-article img { @apply rounded-[32px] border border-indigo-100 shadow-lg; }
+.doc-article a { @apply text-sky-600 underline decoration-sky-400 font-semibold; }
+.doc-article strong { @apply font-semibold text-sky-900; }
+.doc-article img { @apply rounded-[32px] border border-sky-100 shadow-lg; }
 
 @keyframes page-fade {
   from {

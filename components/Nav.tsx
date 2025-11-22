@@ -105,7 +105,7 @@ function UserMenu({ user }: { user?: LearnPressUserPayload | null }) {
     return (
       <Link
         href="/course-login"
-        className="rounded-full border border-indigo-200 px-3 py-1 text-sm font-semibold text-indigo-900 transition hover:bg-white md:ml-2"
+        className="rounded-full border border-sky-200 px-3 py-1 text-sm font-semibold text-sky-900 transition hover:bg-white md:ml-2"
         onClick={() => setOpen(false)}
       >
         Log In
@@ -117,23 +117,23 @@ function UserMenu({ user }: { user?: LearnPressUserPayload | null }) {
     <div className="relative md:ml-2">
       <button
         type="button"
-        className="flex items-center gap-2 rounded-full border border-indigo-200 px-3 py-1 text-sm font-semibold text-indigo-900 transition hover:bg-white"
+        className="flex items-center gap-2 rounded-full border border-sky-200 px-3 py-1 text-sm font-semibold text-sky-900 transition hover:bg-white"
         onClick={() => setOpen((prev) => !prev)}
       >
-        <span className="rounded-full bg-indigo-600/10 px-2 py-1 text-xs uppercase tracking-[0.4em] text-indigo-600">
+        <span className="rounded-full bg-sky-600/10 px-2 py-1 text-xs uppercase tracking-[0.4em] text-sky-600">
           {user.displayName?.slice(0, 1) ?? user.login?.slice(0, 1) ?? 'U'}
         </span>
         <span>{user.displayName ?? user.login ?? 'My Courses'}</span>
       </button>
       <div
         className={cx(
-          'absolute right-0 mt-2 w-48 rounded-2xl border border-indigo-100 bg-white/95 p-2 text-sm text-indigo-900 shadow-lg transition md:origin-top-right',
+          'absolute right-0 mt-2 w-48 rounded-2xl border border-sky-100 bg-white/95 p-2 text-sm text-sky-900 shadow-lg transition md:origin-top-right',
           open ? 'pointer-events-auto scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
         )}
       >
         <Link
           href="/my-courses"
-          className="block rounded-xl px-3 py-2 font-semibold hover:bg-indigo-50"
+          className="block rounded-xl px-3 py-2 font-semibold hover:bg-sky-50"
           onClick={() => setOpen(false)}
         >
           My Courses

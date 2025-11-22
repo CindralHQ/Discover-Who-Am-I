@@ -135,7 +135,7 @@ export default async function WaiThreePage() {
         ].join(' ')}
       >
         <div className="space-y-16 md:space-y-20">
-      <section className="space-y-8 rounded-3xl bg-gradient-to-br from-sky-500 via-indigo-500 to-blue-600 p-6 text-white shadow-lg ring-1 ring-sky-300/40 sm:p-7 md:p-9">
+      <section className="space-y-8 rounded-3xl bg-gradient-to-br from-sky-500 via-sky-500 to-blue-600 p-6 text-white shadow-lg ring-1 ring-sky-300/40 sm:p-7 md:p-9">
         <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:gap-10 md:items-center">
           <LightboxImage
             src={heroVisual}

@@ -103,7 +103,7 @@ function resolveLearnPressSiteUrl() {
     process.env.LP_SITE_URL?.trim() ??
     process.env.WC_STORE_URL?.trim() ??
     process.env.NEXT_PUBLIC_SITE_URL ??
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://discoverwhoami.com')
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://wordpress.discoverwhoami.com')
   )
 }
 

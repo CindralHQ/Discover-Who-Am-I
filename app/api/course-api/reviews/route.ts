@@ -1,11 +1,13 @@
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
-import { getLearnPressSiteUrl, LEARNPRESS_TOKEN_COOKIE } from '@/lib/learnpress'
+import { appendCourseFeedbackRow } from '@/lib/googleSheets'
+import { LEARNPRESS_USER_COOKIE, parseLearnPressUserCookie } from '@/lib/learnpress'
 
 export async function POST(request: Request) {
-  const token = cookies().get(LEARNPRESS_TOKEN_COOKIE)?.value
-  if (!token) {
+  const cookieStore = cookies()
+  const userInfo = parseLearnPressUserCookie(cookieStore.get(LEARNPRESS_USER_COOKIE)?.value)
+  if (!userInfo) {
     return NextResponse.json({ error: 'Sign in to submit feedback.' }, { status: 401 })
   }
 
@@ -13,38 +15,28 @@ export async function POST(request: Request) {
   const courseId = Number(body?.courseId)
   const lessonId = Number(body?.lessonId)
   const rating = Number(body?.rating ?? 5)
-  const title = body?.title?.toString() ?? 'Lesson feedback'
+  const lessonTitle = body?.lessonTitle?.toString()
   const content = body?.content?.toString()
 
   if (!courseId || !content) {
     return NextResponse.json({ error: 'Course ID and content are required.' }, { status: 400 })
   }
 
-  const siteUrl = getLearnPressSiteUrl()
-
-  const response = await fetch(`${siteUrl}/wp-json/learnpress/v1/review/submit`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-    body: JSON.stringify({
-      id: courseId,
-      rate: rating,
-      title,
-      content: `${content}\n\nLesson ID: ${lessonId ?? 'N/A'}`,
-    }),
-  })
-
-  if (!response.ok) {
-    const details = await response.text()
-    return NextResponse.json(
-      { error: `The course service rejected the review (${response.status}): ${details.slice(0, 120)}` },
-      { status: response.status }
-    )
+  try {
+    await appendCourseFeedbackRow({
+      courseId,
+      lessonId: Number.isFinite(lessonId) ? lessonId : undefined,
+      lessonTitle,
+      rating,
+      content,
+      userId: userInfo.id,
+      userEmail: userInfo.email,
+      userName: userInfo.displayName ?? userInfo.login,
+    })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unable to record your testimonial right now.'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 
-  const data = await response.json().catch(() => ({}))
-  return NextResponse.json({ success: true, data })
+  return NextResponse.json({ success: true })
 }

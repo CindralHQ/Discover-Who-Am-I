@@ -8,6 +8,17 @@ export type SheetTestimonial = {
   country?: string
 }
 
+export type CourseFeedbackRow = {
+  courseId: number
+  lessonId?: number
+  lessonTitle?: string
+  rating: number
+  content: string
+  userId?: string
+  userEmail?: string
+  userName?: string
+}
+
 export type DriveVideoTestimonial = {
   id: string
   title: string
@@ -747,4 +758,64 @@ export async function fetchTestimonials(): Promise<SheetTestimonial[]> {
   }
 
   return filtered
+}
+
+export async function appendCourseFeedbackRow(row: CourseFeedbackRow) {
+  const spreadsheetId = process.env.COURSE_FEEDBACK_SHEET_ID
+  if (!spreadsheetId) {
+    throw new Error('COURSE_FEEDBACK_SHEET_ID is not configured.')
+  }
+
+  const serviceAccountEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL
+  const rawKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY
+  if (!serviceAccountEmail || !rawKey) {
+    throw new Error('Google service-account credentials are required to store course feedback.')
+  }
+  const serviceAccountKey = rawKey.replace(/\\n/g, '\n')
+
+  const token = await getServiceAccountAccessToken(serviceAccountEmail, serviceAccountKey, [
+    'https://www.googleapis.com/auth/spreadsheets'
+  ])
+
+  if (!token) {
+    throw new Error('Unable to obtain Google Sheets access token.')
+  }
+
+  const range = process.env.COURSE_FEEDBACK_SHEET_RANGE ?? 'Sheet1!A1'
+  const endpoint = new URL(
+    `/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}:append`,
+    'https://sheets.googleapis.com'
+  )
+  endpoint.searchParams.set('valueInputOption', 'RAW')
+  endpoint.searchParams.set('insertDataOption', 'INSERT_ROWS')
+
+  const values = [
+    [
+      new Date().toISOString(),
+      row.courseId ?? '',
+      row.lessonId ?? '',
+      row.lessonTitle ?? '',
+      row.rating ?? '',
+      row.content ?? '',
+      row.userId ?? '',
+      row.userEmail ?? '',
+      row.userName ?? '',
+    ]
+  ]
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ values })
+  })
+
+  if (!response.ok) {
+    const details = await response.text().catch(() => '')
+    throw new Error(
+      `Failed to append course feedback (${response.status} ${response.statusText}): ${details.slice(0, 200)}`
+    )
+  }
 }

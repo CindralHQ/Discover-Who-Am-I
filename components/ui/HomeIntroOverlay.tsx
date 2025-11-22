@@ -114,7 +114,7 @@ export function HomeIntroOverlay() {
         <div className={`absolute inset-0 ${nebulaBackdrop} transition-opacity duration-700 ${isFinale ? 'opacity-0' : 'opacity-100'}`} />
         <div
           className={[
-            'absolute inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 opacity-90 transition-opacity duration-700',
+            'absolute inset-0 bg-gradient-to-br from-slate-950 via-sky-950 to-slate-900 opacity-90 transition-opacity duration-700',
             isFinale ? 'opacity-0' : 'opacity-90'
           ].join(' ')}
         />

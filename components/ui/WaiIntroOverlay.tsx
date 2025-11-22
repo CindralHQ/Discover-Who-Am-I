@@ -18,7 +18,7 @@ type WaiIntroOverlayProps = {
 const overlayTint: Record<ThemeName, string> = {
   lotus: 'bg-rose-200/70',
   manipura: 'bg-amber-200/70',
-  twilight: 'bg-indigo-200/60',
+  twilight: 'bg-sky-200/60',
   anahata: 'bg-emerald-200/70',
   vishuddha: 'bg-sky-200/70',
   sahasrara: 'bg-violet-200/70'
