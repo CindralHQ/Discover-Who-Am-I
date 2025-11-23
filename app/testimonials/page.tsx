@@ -66,11 +66,6 @@ export default async function Testimonials() {
 
   return (
     <div className="space-y-12">
-      <Quote
-        theme={TESTIMONIALS_THEME}
-        text="We listen to every story with gratitude. Each one reveals how the light of the teachings shines uniquely through every soul."
-        author="Discover Who Am I Team"
-      />
  
 
       <section className="space-y-5">
@@ -125,7 +120,7 @@ export default async function Testimonials() {
 
 
 {videoTestimonials.length > 0 ? (
-        <section className="space-y-5">
+        <section className="space-y-5 mt-5">
           <header className="space-y-2">
             <h2 className={`text-3xl font-semibold tracking-tight ${headingClass}`}>
               Expressions from the Heart - The Voice of Experience
