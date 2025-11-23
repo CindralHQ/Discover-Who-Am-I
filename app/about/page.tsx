@@ -2,11 +2,12 @@ import Image from 'next/image'
 
 import homeLogo from '@/assets/Logo.png'
 import portraitVisual from '@/assets/visuals/Santosh-Ma-Shivratri-1.png'
-import liberationVisual from '@/assets/visuals/Light-Emitting-Through-Body.png'
+import liberationVisual from '@/assets/visuals/Ajna-Chakra-Concentration.png'
 import sacredVisual from '@/assets/visuals/Body-On-Fire-2.jpg'
+import pathPortrait from '@/assets/visuals/Pathway-To-Light.png'
 import subtleBodyVisual from '@/assets/visuals/All-Chakras-Aligned.png'
 import trilogyVisual from '@/assets/visuals/Blue-Guru-Blessings.png'
-import unveiledVisual from '@/assets/visuals/Pathway-To-Light.png'
+import unveiledVisual from '@/assets/visuals/Light-Emitting-Through-Body.png'
 import breathsVisual from '@/assets/visuals/Kundalini-Serpant.png'
 import { LightboxImage } from '@/components/ui/LightboxImage'
 import { WaiIntroOverlay } from '@/components/ui/WaiIntroOverlay'
@@ -22,13 +23,10 @@ const awakeningHighlights = [
   'Documented with rare detail, this visual journal shares a process of evolution seldom captured in spiritual literature.'
 ]
 
-const thongdrolSenses = [
-  { title: 'Thongdrol', detail: 'Liberation Through Seeing' },
-  { title: 'Thodol', detail: 'Liberation Through Hearing' },
-  { title: 'Nyangdrol', detail: 'Liberation Through Tasting' },
-  { title: 'Takdrol', detail: 'Liberation Through Touch' },
-  { title: 'Drendrol', detail: 'Liberation Through Recollection' }
-]
+const thongdrolVisual = {
+  src: liberationVisual,
+  alt: 'Light emitting through the body representing the Thongdrol transmission'
+}
 
 const sacredVisualCopy = [
   'In deep meditation, spontaneous visions bloomed—an intricate map of the entire spiritual journey pouring forth in light.',
@@ -60,16 +58,6 @@ const breathsCopy = [
   'Through deep practice, she realised that these breaths activate the subtle meridians and chakras—making the ascent of Kundalini more accessible and safe for aspirants.',
   'This led her to expand the Brahma Vidya teachings into a course book called The Eight Spiritual Breaths, detailing each breath’s purpose and its impact on the subtle body.'
 ]
-
-function PortraitPlaceholder() {
-  return (
-    <div className="relative aspect-[3/4] w-full max-w-xs overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-tr from-sky-100 via-white to-sky-200 shadow-inner">
-      <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold uppercase tracking-[0.4em] text-sky-400">
-        Santosh Ma
-      </span>
-    </div>
-  )
-}
 
 export default function AboutPage() {
   const palette = themeLibrary[ABOUT_THEME].classes
@@ -116,10 +104,36 @@ export default function AboutPage() {
           alt="Portrait of Santosh Ma during her spiritual practice"
           title="Santosh Ma's Awakening"
           description="Santosh Ma in deep spiritual practice, reflecting the inner inquiry that sparked the Who Am I series' detailed awakening account."
-          className="aspect-[4/3] w-full max-w-xl overflow-hidden rounded-3xl border border-sky-100 text-left shadow-md hover:shadow-lg"
+          className="aspect-[4/3] w-full max-w-lg overflow-hidden rounded-3xl md:ml-auto"
           imageClassName="object-cover object-top"
           sizes="(min-width: 1280px) 480px, (min-width: 768px) 40vw, 100vw"
         />
+      </section>
+
+      <section className="space-y-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm">
+        <div className="grid gap-8 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:items-center">
+          <figure className="mx-auto w-full max-w-lg md:mr-auto">
+            <Image
+              src={thongdrolVisual.src}
+              alt={thongdrolVisual.alt}
+              className="h-auto w-full rounded-2xl object-cover"
+              sizes="(min-width: 768px) 35vw, 100vw"
+            />
+          </figure>
+          <article className="space-y-4 text-base leading-7 text-sky-800">
+            <h3 className="text-3xl font-semibold tracking-tight text-sky-900">Thongdrol : Liberation Through Seeing</h3>
+            <p>
+              Thodol, known as <em>The Tibetan Book of the Dead</em>, is among the most famous works of Buddhist literature by the Indian master{' '}
+              <a href="https://en.wikipedia.org/wiki/Padmasambhava" target="_blank" rel="noreferrer" className="font-semibold text-sky-700 underline">
+                Padmasambhava
+              </a>
+              .
+            </p>
+            <p>
+              <strong>Thongdrol : Liberation Through Seeing</strong> was also composed by Padmasambhava. The concept rests on the belief that certain visuals, when seen, initiate the seer into a higher level of consciousness. The mere viewing of the unfurled thongdrol is said to cleanse the viewer of negative karma and spark realisation.
+            </p>
+          </article>
+        </div>
       </section>
 
       <section className="grid gap-10 rounded-3xl border border-sky-100 bg-white p-8 shadow-sm md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
@@ -141,52 +155,26 @@ export default function AboutPage() {
             daily life.
           </p>
         </div>
-        <div className="flex items-start justify-center md:justify-end">
-          <PortraitPlaceholder />
-        </div>
-      </section>
-
-      <section className="space-y-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm">
-        <div className="grid gap-8 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:items-center">
-          <div className="space-y-6">
-
-            <div className="space-y-3 rounded-[32px] border border-sky-100 bg-sky-50/70 p-5 shadow-inner">
-              {thongdrolSenses.map((item) => (
-                <p key={item.title} className="text-base font-semibold text-sky-900">
-                  <span className="font-bold">{item.title}</span>
-                  <span className="text-sky-500"> · {item.detail}</span>
-                </p>
-              ))}
-            </div>
-          </div>
-          <article className="space-y-4 text-base leading-7 text-sky-800">
-            <h3 className="text-3xl font-semibold tracking-tight text-sky-900">Thongdrol : Liberation Through Seeing</h3>
-            <p>
-              Thodol, known as <em>The Tibetan Book of the Dead</em>, is among the most famous works of Buddhist literature by the Indian master{' '}
-              <a href="https://en.wikipedia.org/wiki/Padmasambhava" target="_blank" rel="noreferrer" className="font-semibold text-sky-700 underline">
-                Padmasambhava
-              </a>
-              .
-            </p>
-            <p>
-              <strong>Thongdrol : Liberation Through Seeing</strong> was also composed by Padmasambhava. The concept rests on the belief that certain visuals, when seen, initiate the seer into a higher level of consciousness. The mere viewing of the unfurled thongdrol is said to cleanse the viewer of negative karma and spark realisation.
-            </p>
-          </article>
-        </div>
-        <div className="border-t border-sky-100" aria-hidden="true" />
-        <p className="text-sm uppercase tracking-[0.35em] text-sky-400">Wisdom carried through the senses</p>
+        <figure className="flex justify-center md:justify-end">
+          <Image
+            src={pathPortrait}
+            alt="Illustration symbolising Santosh Ma's journey"
+            className="h-auto w-full max-w-xs rounded-3xl object-cover md:max-w-sm"
+            sizes="(min-width: 768px) 25vw, 70vw"
+          />
+        </figure>
       </section>
 
       <section className="grid gap-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:items-center">
+        <figure className="mx-auto w-full max-w-lg md:mr-auto">
+          <Image src={sacredVisual} alt="Figure immersed in sacred flames representing the activation of inner fire" className="h-auto w-full rounded-2xl object-cover" />
+        </figure>
         <article className="space-y-4 text-base leading-7 text-sky-800">
           <h3 className="text-3xl font-semibold tracking-tight text-sky-900">A Language of Light: The Sacred Visual</h3>
           {sacredVisualCopy.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
         </article>
-        <figure className="order-first overflow-hidden rounded-[32px] border border-sky-100 bg-gradient-to-tr from-white to-sky-50 p-4 shadow-sm md:order-last">
-          <Image src={sacredVisual} alt="Figure immersed in sacred flames representing the activation of inner fire" className="h-auto w-full rounded-2xl object-cover" />
-        </figure>
       </section>
 
       <section className="grid gap-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm md:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] md:items-center">
@@ -197,13 +185,13 @@ export default function AboutPage() {
             <p key={index}>{paragraph}</p>
           ))}
         </article>
-        <figure className="overflow-hidden rounded-[32px] border border-sky-100 bg-gradient-to-tr from-white to-sky-50 p-5 shadow-sm">
+        <figure className="mx-auto w-full max-w-lg md:ml-auto">
           <Image src={subtleBodyVisual} alt="Illustration of the subtle body mapped through glowing chakras" className="h-auto w-full rounded-2xl object-contain" />
         </figure>
       </section>
 
       <section className="grid gap-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] md:items-center">
-        <figure className="overflow-hidden rounded-[32px] border border-sky-100 bg-gradient-to-br from-white to-sky-50 p-5 shadow-sm">
+        <figure className="mx-auto w-full max-w-lg md:mr-auto">
           <Image src={trilogyVisual} alt="Cover art referencing The Kundalini Trilogy" className="h-auto w-full rounded-2xl object-cover" />
         </figure>
         <article className="space-y-4 text-base leading-7 text-sky-800">
@@ -222,13 +210,13 @@ export default function AboutPage() {
             <p key={index}>{paragraph}</p>
           ))}
         </article>
-        <figure className="overflow-hidden rounded-[32px] border border-sky-100 bg-gradient-to-br from-white to-sky-50 p-4 shadow-sm">
+        <figure className="mx-auto w-full max-w-lg md:ml-auto">
           <Image src={unveiledVisual} alt="Artwork showing the luminous pathway toward Sahasrar" className="h-auto w-full rounded-2xl object-cover" />
         </figure>
       </section>
 
       <section className="grid gap-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-center">
-        <figure className="overflow-hidden rounded-[32px] border border-sky-100 bg-gradient-to-br from-white to-sky-50 p-4 shadow-sm">
+        <figure className="mx-auto w-full max-w-lg md:mr-auto">
           <Image src={breathsVisual} alt="Sacred depiction of kundalini energy winding upward" className="h-auto w-full rounded-2xl object-contain" />
         </figure>
         <article className="space-y-4 text-base leading-7 text-sky-800">
