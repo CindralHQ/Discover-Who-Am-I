@@ -64,7 +64,7 @@ export default function AboutPage() {
   const headingClass = palette.card.title
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-12 md:space-y-14">
       <WaiIntroOverlay theme={ABOUT_THEME} icon={homeLogo} label="Discover Who Am I" size="hero" applyBodyTint={false} />
       <section className="text-sky-800">
         <p className="text-sm font-medium uppercase tracking-[0.4em] text-sky-400">About</p>
@@ -104,7 +104,7 @@ export default function AboutPage() {
           alt="Portrait of Santosh Ma during her spiritual practice"
           title="Santosh Ma's Awakening"
           description="Santosh Ma in deep spiritual practice, reflecting the inner inquiry that sparked the Who Am I series' detailed awakening account."
-          className="aspect-[4/3] w-full max-w-lg overflow-hidden rounded-3xl md:ml-auto"
+          className="aspect-[4/3] w-full max-w-lg overflow-hidden rounded-3xl md:mr-auto"
           imageClassName="object-cover object-top"
           sizes="(min-width: 1280px) 480px, (min-width: 768px) 40vw, 100vw"
         />
@@ -136,7 +136,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="grid gap-10 rounded-3xl border border-sky-100 bg-white p-8 shadow-sm md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+      <section className="grid gap-6 rounded-3xl border border-sky-100 bg-white p-8 shadow-sm md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:gap-10">
         <div className="space-y-4">
           <h2 className={`text-3xl font-semibold tracking-tight ${headingClass}`}>
             Santosh Ma&apos;s Path
