@@ -38,7 +38,7 @@ const subtleBodyCopy = [
   'For centuries, seekers have worked with the outer practices of yoga: the body, the breath, the mind.',
   'Santosh Ma’s work enters a deeper terrain—the subtle body, the original matrix of human existence.',
   'Her teachings illuminate the inner anatomy of the chakras, nadis, and Kundalini Shakti not as concepts, but as living forces that a seeker can recognise, feel, and evolve with.',
-  'She reveals the soul’s journey from its birth as the “Jeev-Atma” to its flowering into full consciousness.'
+  'She traces the soul’s divine journey: from its emergence as the Jeev-Atma, to the long and most often unattained state - the flowering of the Spiritual Heart; while illuminating the sacred workings of Grace. In this sacred unveiling, the mysteries of the Granthis, the Body of Gold, and the Shiva-Lingam are revealed in their full glory.'
 ]
 
 const trilogyCopy = [
@@ -72,9 +72,7 @@ export default function AboutPage() {
           Discover Who Am I
         </h1>
         <p className="max-w-3xl text-base leading-7 text-sky-500">
-          Discover Who Am I is guided by Santosh Ma (Santosh Sachdeva), whose direct Kundalini awakening in 1995
-          opened a lifetime of surrender to Higher Forces. Her journey continues to illuminate the teachings we
-          share with seekers across the world.
+          Discover Who Am I is a four-part series — a rare visual revelation of Kundalini awakening that illuminates the inner anatomy of the chakras, nadis, and the unfolding of consciousness. It culminates in a profound gift to humanity: the sacred insights on the Three Granthis, the Shiva-Lingam, and the Body of Gold — knowledge never before shared in such depth and clarity.
         </p>
       </section>
 
@@ -82,22 +80,33 @@ export default function AboutPage() {
         <div className="space-y-6 rounded-3xl border border-sky-100 bg-white p-8 shadow-sm">
           <header className="space-y-2">
             <h3 className={`text-2xl font-semibold ${headingClass}`}>
-              Santosh Ma&apos;s Spiritual Awakening Has Been Unique
+              About Santosh Ma
             </h3>
+            <h4 className={`text-1xl font-semibold ${headingClass}`}>
+              A Seer of the Inner Worlds  
+              <br />    
+              A Master Guide of the Subtle Body & Kundalini Wisdom
+            </h4>
             <p className={`text-base leading-7 ${palette.muted}`}>
-              The question surfaced in her mind:
-              <br />
-              Who am I? Where do I come from? Where am I going?
+              There are beings who study spirituality,
+              and there are rare ones through whom 
+              spirituality reveals itself.
+              <br />  
+              Santosh Ma belongs to the latter.
+              Her work is not constructed from books, 
+              doctrine, or borrowed wisdom;
+              it is directly downloaded from the inner universe,
+              received through years of meditation and grace.
+              <br />  
+              She is a contemporary mystic whose life has 
+              unfolded as a sacred experiment in consciousness.
+              <br />  
+              Her writings, courses, and visuals are not teachings 
+              they are transmissions; doorways into the unseen 
+              realms of the human awakening.
+
             </p>
           </header>
-          <ul className={`space-y-3 text-base leading-7 ${palette.muted}`}>
-            {awakeningHighlights.map((item, index) => (
-              <li key={index} className="flex gap-3">
-                <span className="mt-2 h-2 w-2 rounded-full bg-sky-400" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
         </div>
         <LightboxImage
           src={portraitVisual}
@@ -122,15 +131,15 @@ export default function AboutPage() {
           </figure>
           <article className="space-y-4 text-base leading-7 text-sky-800">
             <h3 className="text-3xl font-semibold tracking-tight text-sky-900">Thongdrol : Liberation Through Seeing</h3>
+            <h3 className="text-1xl font-semibold tracking-tight text-sky-900">Composed by Padmasambhava</h3>
             <p>
-              Thodol, known as <em>The Tibetan Book of the Dead</em>, is among the most famous works of Buddhist literature by the Indian master{' '}
-              <a href="https://en.wikipedia.org/wiki/Padmasambhava" target="_blank" rel="noreferrer" className="font-semibold text-sky-700 underline">
+              Thongdrol :Liberation Through Seeing was composed by Padmasambhava.  The concept of Thongdrol rests on the belief that certain visuals  when seen help initiate the seer into a higher level of consciousness. The mere viewing of the unfurled thongdrol is said to cleanse the viewer of negative karma and initiate a realization.
+            </p>
+            <p>
+             Thodol, known as The Tibetan Book of the Dead, one of the most famous works of Buddhist literature is also composed by the Tibetan, Indian master <a href="https://en.wikipedia.org/wiki/Padmasambhava" target="_blank" rel="noreferrer" className="font-semibold text-sky-700 underline">
                 Padmasambhava
               </a>
               .
-            </p>
-            <p>
-              <strong>Thongdrol : Liberation Through Seeing</strong> was also composed by Padmasambhava. The concept rests on the belief that certain visuals, when seen, initiate the seer into a higher level of consciousness. The mere viewing of the unfurled thongdrol is said to cleanse the viewer of negative karma and spark realisation.
             </p>
           </article>
         </div>
@@ -138,21 +147,25 @@ export default function AboutPage() {
 
       <section className="grid gap-6 rounded-3xl border border-sky-100 bg-white p-8 shadow-sm md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:gap-10">
         <div className="space-y-4">
-          <h2 className={`text-3xl font-semibold tracking-tight ${headingClass}`}>
-            Santosh Ma&apos;s Path
+          <h2 className={`text-2xl font-semibold tracking-tight ${headingClass}`}>
+           A Contemporary Terma: The Hidden Treasure of <br /> ‘Discover Who Am I’
           </h2>
           <p className={`text-base leading-7 ${palette.muted}`}>
-            Santosh Ma immersed herself in Brahma Vidya under Justice M. L. Dudhat in 1995. The initiation ignited an
-            enduring relationship with Kundalini energy, chronicled through the Kundalini Trilogy—<em>
-              Kundalini: A Gentle Force
-            </em>
-            , <em>Kundalini Diary</em>, and <em>Kundalini Awakening</em>. These texts present rare illustrated detail on
-            the unfolding of subtle consciousness and continue to guide students navigating their own inner ascent.
+            In Vajrayana Buddhism, a terma is a “hidden treasure”
+            a wisdom teaching concealed by enlightened masters
+            until humanity becomes ready to receive it.
           </p>
           <p className={`text-base leading-7 ${palette.muted}`}>
-            With more than ten titles authored, she bridges ancient transmissions and contemporary seekers. Her work
-            demystifies profound experiences, encouraging practitioners to trust their journey while staying grounded in
-            daily life.
+           Many seekers feel that the Discover Who Am I series 
+            carries this quality : a revelation arriving at 
+            precisely the moment when the world stands 
+            on the threshold of transformation.
+          </p>
+          <p className={`text-base leading-7 ${palette.muted}`}>
+            As artificial intelligence rises in the outer world,
+the ‘Discover Who Am I’ series  opens the inner intelligence, the luminous 
+architecture of consciousness itself.
+
           </p>
         </div>
         <figure className="flex justify-center md:justify-end">
@@ -165,29 +178,21 @@ export default function AboutPage() {
         </figure>
       </section>
 
-      <section className="grid gap-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:items-center">
-        <figure className="mx-auto w-full max-w-lg md:mr-auto">
-          <Image src={sacredVisual} alt="Figure immersed in sacred flames representing the activation of inner fire" className="h-auto w-full rounded-2xl object-cover" />
-        </figure>
-        <article className="space-y-4 text-base leading-7 text-sky-800">
-          <h3 className="text-3xl font-semibold tracking-tight text-sky-900">A Language of Light: The Sacred Visual</h3>
-          {sacredVisualCopy.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
-        </article>
-      </section>
 
       <section className="grid gap-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm md:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] md:items-center">
+        
+        <figure className="mx-auto w-full max-w-lg md:ml-auto">
+          <Image src={subtleBodyVisual} alt="Illustration of the subtle body mapped through glowing chakras" className="h-auto w-full rounded-2xl object-contain" />
+        </figure>
+
         <article className="space-y-4 text-base leading-7 text-sky-800">
           <p className="text-sm font-semibold uppercase tracking-[0.4em] text-sky-400">A New Paradigm for the 21st Century</p>
-          <h3 className="text-3xl font-semibold tracking-tight text-sky-900">The Subtle Body as the Key to Human Evolution</h3>
+          <h3 className="text-2xl font-semibold tracking-tight text-sky-900">The Subtle Body as the Key to Human Evolution</h3>
           {subtleBodyCopy.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
         </article>
-        <figure className="mx-auto w-full max-w-lg md:ml-auto">
-          <Image src={subtleBodyVisual} alt="Illustration of the subtle body mapped through glowing chakras" className="h-auto w-full rounded-2xl object-contain" />
-        </figure>
+        
       </section>
 
       <section className="grid gap-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] md:items-center">
