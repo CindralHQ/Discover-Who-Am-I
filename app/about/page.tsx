@@ -3,12 +3,10 @@ import Image from 'next/image'
 import homeLogo from '@/assets/Logo.png'
 import portraitVisual from '@/assets/visuals/Santosh-Ma-Shivratri-1.png'
 import liberationVisual from '@/assets/visuals/Ajna-Chakra-Concentration.png'
-import sacredVisual from '@/assets/visuals/Body-On-Fire-2.jpg'
-import pathPortrait from '@/assets/visuals/Pathway-To-Light.png'
+import pathPortrait from '@/assets/Logo.png'
 import subtleBodyVisual from '@/assets/visuals/All-Chakras-Aligned.png'
-import trilogyVisual from '@/assets/visuals/Blue-Guru-Blessings.png'
-import unveiledVisual from '@/assets/visuals/Light-Emitting-Through-Body.png'
-import breathsVisual from '@/assets/visuals/Kundalini-Serpant.png'
+import trilogyVisual from '@/assets/K-Trilogy.webp'
+import breathsVisual from '@/assets/TESB-BOOK.webp'
 import { LightboxImage } from '@/components/ui/LightboxImage'
 import { WaiIntroOverlay } from '@/components/ui/WaiIntroOverlay'
 import { themeLibrary, ThemeName } from '@/lib/designSystem'
@@ -195,34 +193,25 @@ architecture of consciousness itself.
         
       </section>
 
-      <section className="grid gap-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] md:items-center">
-        <figure className="mx-auto w-full max-w-lg md:mr-auto">
-          <Image src={trilogyVisual} alt="Cover art referencing The Kundalini Trilogy" className="h-auto w-full rounded-2xl object-cover" />
-        </figure>
+      <section className="grid gap-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm md:grid-cols-[minmax(0,0.8fr)_minmax(0,0.8fr)] md:items-center">
+        
         <article className="space-y-4 text-base leading-7 text-sky-800">
-          <p className="text-sm font-semibold uppercase tracking-[0.4em] text-sky-400">Key Contributions</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.4em] text-sky-400">Other Contributions</p>
           <h3 className="text-3xl font-semibold tracking-tight text-sky-900">The Kundalini Trilogy: A Chronicle of Awakening</h3>
           {trilogyCopy.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
         </article>
+        <figure className="mx-auto w-full max-w-lg md:mr-auto">
+          <Image src={trilogyVisual} alt="Cover art referencing The Kundalini Trilogy" className="h-auto w-2/3 mx-auto rounded-2xl object-cover" />
+        </figure>
+
       </section>
 
-      <section className="grid gap-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] md:items-center">
-        <article className="space-y-4 text-base leading-7 text-sky-800">
-          <h3 className="text-3xl font-semibold tracking-tight text-sky-900">Unveiled : The Holy Grail of the Inner Journey</h3>
-          {unveiledCopy.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
-        </article>
-        <figure className="mx-auto w-full max-w-lg md:ml-auto">
-          <Image src={unveiledVisual} alt="Artwork showing the luminous pathway toward Sahasrar" className="h-auto w-full rounded-2xl object-cover" />
-        </figure>
-      </section>
 
       <section className="grid gap-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-center">
         <figure className="mx-auto w-full max-w-lg md:mr-auto">
-          <Image src={breathsVisual} alt="Sacred depiction of kundalini energy winding upward" className="h-auto w-full rounded-2xl object-contain" />
+          <Image src={breathsVisual} alt="The Eight Spiritual Breaths" className="h-auto w-2/3 mx-auto rounded-2xl object-contain" />
         </figure>
         <article className="space-y-4 text-base leading-7 text-sky-800">
           <p className="text-sm font-semibold uppercase tracking-[0.4em] text-sky-400">The Eight Spiritual Breaths</p>
