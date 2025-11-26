@@ -24,7 +24,7 @@ export const metadata = {
 
 export default function StyleGuidePage() {
   return (
-    <div className="space-y-16 pb-16">
+    <div className="container space-y-16 pb-16">
       <header className="space-y-4">
         <h1 className="text-4xl font-semibold tracking-tight text-slate-900">
           Discover Who Am I - Style Guide

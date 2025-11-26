@@ -136,17 +136,19 @@ export default async function CourseDetailPage({
 
   if (!authToken) {
     return (
-      <div className="space-y-6 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm">
-        <h1 className="text-3xl font-semibold tracking-tight text-sky-900">Course details</h1>
-        <p className="text-base leading-7 text-sky-800">
-          Sign in to view the content and continue your journey.
-        </p>
-        <Link
-          href="/course-login"
-          className="inline-flex items-center justify-center rounded-2xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-500"
-        >
-          Go to Login
-        </Link>
+      <div className="container">
+        <div className="space-y-6 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm">
+          <h1 className="text-3xl font-semibold tracking-tight text-sky-900">Course details</h1>
+          <p className="text-base leading-7 text-sky-800">
+            Sign in to view the content and continue your journey.
+          </p>
+          <Link
+            href="/course-login"
+            className="inline-flex items-center justify-center rounded-2xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-500"
+          >
+            Go to Login
+          </Link>
+        </div>
       </div>
     )
   }
@@ -161,12 +163,14 @@ export default async function CourseDetailPage({
 
   if (!course) {
     return (
-      <div className="space-y-6 rounded-3xl border border-rose-200 bg-white/95 p-8 text-rose-800 shadow-sm">
-        <h1 className="text-3xl font-semibold tracking-tight">Course unavailable</h1>
-        <p>{errorMessage ?? 'We could not find a course with that ID.'}</p>
-        <Link href="/my-courses" className="text-sm font-semibold text-rose-700 underline">
-          Back to My Courses
-        </Link>
+      <div className="container">
+        <div className="space-y-6 rounded-3xl border border-rose-200 bg-white/95 p-8 text-rose-800 shadow-sm">
+          <h1 className="text-3xl font-semibold tracking-tight">Course unavailable</h1>
+          <p>{errorMessage ?? 'We could not find a course with that ID.'}</p>
+          <Link href="/my-courses" className="text-sm font-semibold text-rose-700 underline">
+            Back to My Courses
+          </Link>
+        </div>
       </div>
     )
   }
@@ -195,7 +199,7 @@ export default async function CourseDetailPage({
   const activeLessonTitle = lesson?.title?.rendered ?? activeLesson?.title ?? ''
 
   return (
-    <div className="space-y-6">
+    <div className="container space-y-6">
       <header className="rounded-3xl border border-sky-100 bg-white/95 p-6 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>

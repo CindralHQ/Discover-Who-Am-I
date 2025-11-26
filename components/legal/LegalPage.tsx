@@ -22,7 +22,7 @@ export function LegalPage({
   const headingClass = palette.card.title
 
   return (
-    <div className="space-y-12">
+    <div className="container space-y-12">
       <section className={`rounded-3xl border border-white/70 ${palette.surface} p-8 shadow-sm`}>
         <div className="space-y-3">
           <h1 className={`text-3xl font-semibold tracking-tight ${headingClass}`}>{title}</h1>

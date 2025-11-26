@@ -61,23 +61,25 @@ export default async function MyCoursesPage() {
 
   if (!authToken) {
     return (
-      <div className="space-y-6 rounded-3xl border border-sky-100 bg-white/95 p-8 text-sky-900 shadow-sm">
-        <h1 className="text-3xl font-semibold tracking-tight">My Courses</h1>
-        <p className="text-base leading-7 text-sky-800">
-          Sign in with your course credentials to unlock your library and jump back into your journey.
-        </p>
-        <Link
-          href="/course-login"
-          className="inline-flex w-full items-center justify-center rounded-2xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-500 sm:w-auto"
-        >
-          Go to Login
-        </Link>
+      <div className="container">
+        <div className="space-y-6 rounded-3xl border border-sky-100 bg-white/95 p-8 text-sky-900 shadow-sm">
+          <h1 className="text-3xl font-semibold tracking-tight">My Courses</h1>
+          <p className="text-base leading-7 text-sky-800">
+            Sign in with your course credentials to unlock your library and jump back into your journey.
+          </p>
+          <Link
+            href="/course-login"
+            className="inline-flex w-full items-center justify-center rounded-2xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-500 sm:w-auto"
+          >
+            Go to Login
+          </Link>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-8">
+    <div className="container space-y-8">
       <header className="space-y-4 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>

@@ -6,7 +6,7 @@ export const metadata = {
 
 export default function AttributionsPage() {
   return (
-    <div className="space-y-12">
+    <div className="container space-y-12">
       <section className="rounded-3xl bg-gradient-to-br from-sky-700 via-sky-800 to-slate-900 p-10 text-white shadow-lg">
         <p className="text-sm font-medium uppercase tracking-[0.4em] text-sky-200">Credits</p>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">Source Acknowledgements</h1>

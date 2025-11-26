@@ -130,6 +130,7 @@ export default async function WaiThreePage() {
       <WaiIntroOverlay theme={THEME} icon={vishuddhaIcon} label="Vishuddha" />
       <div
         className={[
+          'container',
           palette.surface,
           'min-h-screen rounded-[24px] px-3 py-8 shadow-inner shadow-black/5 sm:rounded-[32px] sm:px-6 sm:py-10 md:rounded-[36px] md:px-10'
         ].join(' ')}

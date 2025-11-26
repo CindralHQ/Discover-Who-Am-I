@@ -198,6 +198,10 @@ export function BackgroundAudio() {
     []
   )
 
+  const resetFontScale = useCallback(() => {
+    setFontScale(1)
+  }, [])
+
   const handleIncreaseFont = useCallback(() => {
     adjustFontScale(FONT_SCALE_STEP)
   }, [adjustFontScale])
@@ -205,6 +209,24 @@ export function BackgroundAudio() {
   const handleDecreaseFont = useCallback(() => {
     adjustFontScale(-FONT_SCALE_STEP)
   }, [adjustFontScale])
+
+  useEffect(() => {
+    const handleFontResetHotkey = (event: KeyboardEvent) => {
+      const key = event.key?.toLowerCase() ?? ''
+      const code = event.code ? event.code.toLowerCase() : ''
+      const modifierHeld = event.metaKey || event.ctrlKey
+      const isModifierReset = modifierHeld && key === '0'
+      const isFunctionReset = key === 'f10' || key === 'f0' || code === 'f10'
+
+      if (isModifierReset || isFunctionReset) {
+        event.preventDefault()
+        resetFontScale()
+      }
+    }
+
+    window.addEventListener('keydown', handleFontResetHotkey)
+    return () => window.removeEventListener('keydown', handleFontResetHotkey)
+  }, [resetFontScale])
 
   return (
     <>

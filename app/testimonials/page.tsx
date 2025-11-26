@@ -65,7 +65,7 @@ export default async function Testimonials() {
   const usingFallback = remoteTestimonials.length === 0
 
   return (
-    <div className="space-y-12">
+    <div className="container space-y-12">
  
 
       <section className="space-y-5">

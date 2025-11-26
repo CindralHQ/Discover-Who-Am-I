@@ -62,7 +62,7 @@ export default function AboutPage() {
   const headingClass = palette.card.title
 
   return (
-    <div className="space-y-12 md:space-y-14">
+    <div className="container space-y-12 md:space-y-14">
       <WaiIntroOverlay theme={ABOUT_THEME} icon={homeLogo} label="Discover Who Am I" size="hero" applyBodyTint={false} />
       <section className="text-sky-800">
         <p className="text-sm font-medium uppercase tracking-[0.4em] text-sky-400">About</p>
@@ -119,11 +119,11 @@ export default function AboutPage() {
 
       <section className="space-y-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm">
         <div className="grid gap-8 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:items-center">
-          <figure className="mx-auto w-full max-w-lg md:mr-auto">
+          <figure className="mx-auto w-full max-w-lg overflow-hidden rounded-3xl bg-sky-50 md:mr-auto">
             <Image
               src={thongdrolVisual.src}
               alt={thongdrolVisual.alt}
-              className="h-auto w-full rounded-2xl object-cover"
+              className="mx-auto h-auto w-full max-h-[420px] rounded-3xl object-contain"
               sizes="(min-width: 768px) 35vw, 100vw"
             />
           </figure>
@@ -167,20 +167,26 @@ architecture of consciousness itself.
           </p>
         </div>
         <figure className="flex justify-center md:justify-end">
-          <Image
-            src={pathPortrait}
-            alt="Illustration symbolising Santosh Ma's journey"
-            className="h-auto w-full max-w-xs rounded-3xl object-cover md:max-w-sm"
-            sizes="(min-width: 768px) 25vw, 70vw"
-          />
+          <div className="mx-auto w-full max-w-xs overflow-hidden rounded-3xl bg-sky-50 md:max-w-sm">
+            <Image
+              src={pathPortrait}
+              alt="Illustration symbolising Santosh Ma's journey"
+              className="h-auto w-full max-h-[420px] object-contain"
+              sizes="(min-width: 768px) 25vw, 70vw"
+            />
+          </div>
         </figure>
       </section>
 
 
       <section className="grid gap-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm md:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] md:items-center">
         
-        <figure className="mx-auto w-full max-w-lg md:ml-auto">
-          <Image src={subtleBodyVisual} alt="Illustration of the subtle body mapped through glowing chakras" className="h-auto w-full rounded-2xl object-contain" />
+        <figure className="mx-auto w-full max-w-lg overflow-hidden rounded-3xl bg-sky-50 md:ml-auto">
+          <Image
+            src={subtleBodyVisual}
+            alt="Illustration of the subtle body mapped through glowing chakras"
+            className="mx-auto h-auto w-full max-h-[420px] rounded-3xl object-contain"
+          />
         </figure>
 
         <article className="space-y-4 text-base leading-7 text-sky-800">
@@ -202,16 +208,24 @@ architecture of consciousness itself.
             <p key={index}>{paragraph}</p>
           ))}
         </article>
-        <figure className="mx-auto w-full max-w-lg md:mr-auto">
-          <Image src={trilogyVisual} alt="Cover art referencing The Kundalini Trilogy" className="h-auto w-2/3 mx-auto rounded-2xl object-cover" />
+        <figure className="mx-auto w-full max-w-lg overflow-hidden rounded-3xl bg-sky-50 md:mr-auto">
+          <Image
+            src={trilogyVisual}
+            alt="Cover art referencing The Kundalini Trilogy"
+            className="mx-auto h-auto w-full max-h-[420px] rounded-3xl object-contain"
+          />
         </figure>
 
       </section>
 
 
       <section className="grid gap-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-center">
-        <figure className="mx-auto w-full max-w-lg md:mr-auto">
-          <Image src={breathsVisual} alt="The Eight Spiritual Breaths" className="h-auto w-2/3 mx-auto rounded-2xl object-contain" />
+        <figure className="mx-auto w-full max-w-lg overflow-hidden rounded-3xl bg-sky-50 md:mr-auto">
+          <Image
+            src={breathsVisual}
+            alt="The Eight Spiritual Breaths"
+            className="mx-auto h-auto w-full max-h-[420px] rounded-3xl object-contain"
+          />
         </figure>
         <article className="space-y-4 text-base leading-7 text-sky-800">
           <p className="text-sm font-semibold uppercase tracking-[0.4em] text-sky-400">The Eight Spiritual Breaths</p>

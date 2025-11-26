@@ -25,7 +25,7 @@ export default async function WooCommerceTestPage() {
   }
 
   return (
-    <div className="space-y-10">
+    <div className="container space-y-10">
       <section className="space-y-4 rounded-3xl border border-sky-100 bg-white/90 p-8 shadow-sm">
         <p className="text-xs font-semibold uppercase tracking-[0.35em] text-sky-400">Integration Test</p>
         <h1 className="text-3xl font-semibold tracking-tight text-sky-900">WooCommerce Products</h1>
