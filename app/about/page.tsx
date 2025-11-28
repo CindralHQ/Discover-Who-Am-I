@@ -2,7 +2,7 @@ import Image from 'next/image'
 
 import homeLogo from '@/assets/Logo.png'
 import portraitVisual from '@/assets/visuals/Santosh-Ma-Shivratri-1.png'
-import liberationVisual from '@/assets/Thongdrol.jpeg'
+import liberationVisual from '@/assets/Thongdrol-wide.jpeg'
 import pathPortrait from '@/assets/Logo.png'
 import subtleBodyVisual from '@/assets/visuals/All-Chakras-Aligned.png'
 import trilogyVisual from '@/assets/K-Trilogy.webp'
@@ -236,6 +236,30 @@ architecture of consciousness itself.
         </article>
       </section>
 
+      <section className="rounded-3xl bg-sky-50 p-8 text-base leading-7 text-sky-800 ring-1 ring-sky-100/70">
+        <h2 className={`text-2xl font-semibold ${headingClass}`}>Stay Connected</h2>
+        <p className="mt-3 text-sky-800">
+          Seekers who have completed the Part 1 of ‘Discover Who Am I’ series or enrolled for ‘The Eight Spiritual Breaths’ online course can attend the ongoing mentoring sessions with Santosh Ma where questions on meditation, chakras and Kundalini are met with clarity. To know more about Santosh Ma and the lineage and ‘The Eight Spiritual Breaths’ visit: {' '} 
+          <a
+            href="https://www.santoshsachdeva.com"
+            rel="noopener noreferrer"
+            target="_blank"
+            className="font-semibold text-sky-600 underline decoration-sky-400 hover:text-sky-700"
+          >
+          www.santoshsachdeva.com
+          </a>
+           {' '} ; {' '}
+          <a
+            href="https://www.eightspiritualbreaths.com"
+            rel="noopener noreferrer"
+            target="_blank"
+            className="font-semibold text-sky-600 underline decoration-sky-400 hover:text-sky-700"
+          >
+            eightspiritualbreaths.com
+          </a>
+          .
+        </p>
+      </section>
     </div>
   )
 }
