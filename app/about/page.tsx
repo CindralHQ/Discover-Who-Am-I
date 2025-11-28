@@ -2,7 +2,7 @@ import Image from 'next/image'
 
 import homeLogo from '@/assets/Logo.png'
 import portraitVisual from '@/assets/visuals/Santosh-Ma-Shivratri-1.png'
-import liberationVisual from '@/assets/visuals/Ajna-Chakra-Concentration.png'
+import liberationVisual from '@/assets/Thongdrol.jpeg'
 import pathPortrait from '@/assets/Logo.png'
 import subtleBodyVisual from '@/assets/visuals/All-Chakras-Aligned.png'
 import trilogyVisual from '@/assets/K-Trilogy.webp'
@@ -119,7 +119,7 @@ export default function AboutPage() {
 
       <section className="space-y-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm">
         <div className="grid gap-8 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:items-center">
-          <figure className="mx-auto w-full max-w-lg overflow-hidden rounded-3xl bg-sky-50 md:mr-auto">
+          <figure className="mx-auto w-full max-w-lg overflow-hidden rounded-3xl md:mr-auto">
             <Image
               src={thongdrolVisual.src}
               alt={thongdrolVisual.alt}
@@ -167,7 +167,7 @@ architecture of consciousness itself.
           </p>
         </div>
         <figure className="flex justify-center md:justify-end">
-          <div className="mx-auto w-full max-w-xs overflow-hidden rounded-3xl bg-sky-50 md:max-w-sm">
+          <div className="mx-auto w-full max-w-xs overflow-hidden rounded-3xl md:max-w-sm">
             <Image
               src={pathPortrait}
               alt="Illustration symbolising Santosh Ma's journey"
@@ -181,7 +181,7 @@ architecture of consciousness itself.
 
       <section className="grid gap-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm md:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] md:items-center">
         
-        <figure className="mx-auto w-full max-w-lg overflow-hidden rounded-3xl bg-sky-50 md:ml-auto">
+        <figure className="mx-auto w-full max-w-lg overflow-hidden rounded-3xl md:ml-auto">
           <Image
             src={subtleBodyVisual}
             alt="Illustration of the subtle body mapped through glowing chakras"
@@ -208,7 +208,7 @@ architecture of consciousness itself.
             <p key={index}>{paragraph}</p>
           ))}
         </article>
-        <figure className="mx-auto w-full max-w-lg overflow-hidden rounded-3xl bg-sky-50 md:mr-auto">
+        <figure className="mx-auto w-full max-w-lg overflow-hidden rounded-3xl md:mr-auto">
           <Image
             src={trilogyVisual}
             alt="Cover art referencing The Kundalini Trilogy"
@@ -220,7 +220,7 @@ architecture of consciousness itself.
 
 
       <section className="grid gap-8 rounded-3xl border border-sky-100 bg-white/95 p-8 shadow-sm md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-center">
-        <figure className="mx-auto w-full max-w-lg overflow-hidden rounded-3xl bg-sky-50 md:mr-auto">
+        <figure className="mx-auto w-full max-w-lg overflow-hidden rounded-3xl md:mr-auto">
           <Image
             src={breathsVisual}
             alt="The Eight Spiritual Breaths"
@@ -236,22 +236,6 @@ architecture of consciousness itself.
         </article>
       </section>
 
-      <section className="rounded-3xl bg-sky-50 p-8 text-base leading-7 text-sky-800 ring-1 ring-sky-100/70">
-        <h2 className={`text-2xl font-semibold ${headingClass}`}>Stay Connected</h2>
-        <p className="mt-3 text-sky-800">
-          Santosh Ma hosts ongoing mentoring circles where questions on meditation, chakras, and Kundalini are met with
-          warmth and clarity. Learn more about The Eight Spiritual Breaths at{' '}
-          <a
-            href="https://www.eightspiritualbreaths.com"
-            rel="noopener noreferrer"
-            target="_blank"
-            className="font-semibold text-sky-600 underline decoration-sky-400 hover:text-sky-700"
-          >
-            eightspiritualbreaths.com
-          </a>
-          .
-        </p>
-      </section>
     </div>
   )
 }
