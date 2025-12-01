@@ -185,7 +185,7 @@ architecture of consciousness itself.
           <Image
             src={subtleBodyVisual}
             alt="Illustration of the subtle body mapped through glowing chakras"
-            className="mx-auto h-auto w-full max-h-[420px] rounded-3xl object-contain"
+            className="mx-auto h-auto w-full max-h-[600px] rounded-3xl object-contain"
           />
         </figure>
 
