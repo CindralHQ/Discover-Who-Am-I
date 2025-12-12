@@ -108,6 +108,14 @@ export function Footer({ className }: FooterProps) {
                 </a>
               </li>
               <li className="text-white/80">Mumbai · India</li>
+              <li>
+                <a
+                  href="/contact"
+                  className="text-white/85 transition hover:text-white hover:underline"
+                >
+                  Contact Us
+                </a>
+              </li>
               {socialLinks.map((link) => (
                 <li key={link.label}>
                   <a
