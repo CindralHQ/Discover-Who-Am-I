@@ -19,6 +19,7 @@ const TESTIMONIALS_THEME: ThemeName = 'twilight'
 const FALLBACK_TESTIMONIALS: SheetTestimonial[] = [
   {
     name: 'Ananya',
+    title: 'Energy That Travels',
     designation: 'Yoga Practitioner',
     country: 'India',
     testimonial:
@@ -26,6 +27,7 @@ const FALLBACK_TESTIMONIALS: SheetTestimonial[] = [
   },
   {
     name: 'Lucas',
+    title: 'Held and Understood',
     designation: 'Retreat Guest',
     country: 'Australia',
     testimonial:
@@ -33,12 +35,14 @@ const FALLBACK_TESTIMONIALS: SheetTestimonial[] = [
   },
   {
     name: 'Maya',
+    title: 'Grounded Practices',
     designation: 'Meditation Student',
     country: 'USA',
     testimonial: '“The practices are precise and grounded. My meditation unfolded with new steadiness.”'
   },
   {
     name: 'Asha',
+    title: 'Guidance Through Change',
     designation: 'Seeker',
     country: 'United Kingdom',
     testimonial: '“I revisit these sessions weekly. The energy remains alive, guiding me through major life shifts.”'
@@ -71,20 +75,21 @@ const FEATURED_VOICE_CARDS: FeaturedVoiceCard[] = [
   {
     title: 'A Living Map of Humanity',
     quote:
-      "Stripped of the highbrow esoterica of many other spiritual teachings, the 'Who Am I' Series maps the essence of what it is to be human and articulates, in accessible, easy to understand words and images, why we're here and how to enjoy the gift of life in a human body.",
+      "The Who am I series encapsulates the evolutionary potential of what humanity can become. A new, never before articulated  way of seeing what it is to be human. A new way of embodying the highest and most authentic expression of existence in human form. The power of these series to transform humanity can’t be overstated.",
     image: chakrasVisual,
     imageAlt: 'Chakra visual symbolising the Who Am I map'
   },
   {
     title: 'Instruction Manual for Now',
     quote:
-      "These teachings are the instruction manual that everyone needs right now. They contain knowledge that, if applied, has the power to course correct humanity's current derangement. If ever there was a teaching for these times, 'Who Am I' is it.",
+      "\"Who Am I - Part 1\" is the instruction manual for life that every human being should have been given in school and early life.\n\nIn a world where we train for everything except how to live as a human, this series offers rare, accessible wisdom on the Chakras, Kundalini Shakti, and the true purpose of our existence.\n\nIf ever there was a teaching humanity needs right now, this is it.",
     image: pathwayToLightVisual,
     imageAlt: 'Pathway to Light artwork symbolising guidance and clarity'
   }
 ]
 
 export default async function Testimonials() {
+  const [primaryFeaturedVoice, ...otherFeaturedVoiceCards] = FEATURED_VOICE_CARDS
   const palette = themeLibrary[TESTIMONIALS_THEME].classes
   const headingClass = palette.card.title
   const videoTestimonials: DriveVideoTestimonial[] = await fetchVideoTestimonials()
@@ -112,9 +117,52 @@ export default async function Testimonials() {
         <div className="space-y-6">
           <div className="rounded-3xl bg-gradient-to-br from-sky-50 via-white to-sky-100/80 p-6 shadow-lg shadow-sky-200/40 ring-1 ring-sky-200/60 md:p-8">
             <div className="grid gap-4 md:grid-cols-3">
-              {FEATURED_VOICE_CARDS.map((card, index) => (
+              <div className="flex h-full flex-col gap-4">
+                <article className="flex h-full flex-col gap-4 rounded-[28px] border border-sky-100 bg-white p-6 shadow-sm shadow-sky-100/60">
+                  <div className="flex items-center gap-4">
+                    <div className="relative h-16 w-16 overflow-hidden rounded-[22px] border border-sky-100 bg-sky-50">
+                      <Image
+                        src={primaryFeaturedVoice.image}
+                        alt={primaryFeaturedVoice.imageAlt}
+                        fill
+                        className="object-cover"
+                        sizes="(min-width: 768px) 64px, 64px"
+                        priority
+                      />
+                    </div>
+                    <p className="text-base font-semibold text-sky-800">{primaryFeaturedVoice.title}</p>
+                  </div>
+                  <p className="text-base leading-7 text-sky-900">{primaryFeaturedVoice.quote}</p>
+                </article>
+
+                <article className="flex h-full flex-col justify-between gap-4 rounded-[28px] border border-sky-100 bg-white p-6 shadow-sm shadow-sky-100/60">
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src={australiaFlag}
+                      alt="Australian flag"
+                      width={88}
+                      height={56}
+                      className="h-14 w-auto rounded-md border border-sky-100 shadow"
+                      priority
+                    />
+                    <div className="space-y-1">
+                      <span className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-500">
+                        Featured Voice
+                      </span>
+                      <p className="text-lg font-semibold text-sky-900">{FEATURED_VOICE_AUTHOR.name}</p>
+                      {[FEATURED_VOICE_AUTHOR.designation, FEATURED_VOICE_AUTHOR.country].filter(Boolean).length > 0 ? (
+                        <p className="text-sm font-medium text-sky-500">
+                          {[FEATURED_VOICE_AUTHOR.designation, FEATURED_VOICE_AUTHOR.country].filter(Boolean).join(' • ')}
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              {otherFeaturedVoiceCards.map((card, index) => (
                 <article
-                  key={`featured-voice-${index}`}
+                  key={`featured-voice-${index + 1}`}
                   className="flex h-full flex-col gap-4 rounded-[28px] border border-sky-100 bg-white p-6 shadow-sm shadow-sky-100/60"
                 >
                   <div className="flex items-center gap-4">
@@ -125,7 +173,6 @@ export default async function Testimonials() {
                         fill
                         className="object-cover"
                         sizes="(min-width: 768px) 64px, 64px"
-                        priority={index === 0}
                       />
                     </div>
                     <p className="text-base font-semibold text-sky-800">{card.title}</p>
@@ -133,28 +180,6 @@ export default async function Testimonials() {
                   <p className="text-base leading-7 text-sky-900">{card.quote}</p>
                 </article>
               ))}
-            </div>
-
-            <div className="space-y-1 mt-5 text-sky-900">
-              <div className="flex items-center gap-2">
-                <Image
-                  src={australiaFlag}
-                  alt="Australian flag"
-                  width={128}
-                  className="h-16 w-auto rounded-md mb-2 border border-sky-100 shadow"
-                  priority
-                />
-              </div>
-              <span className="text-sm font-semibold uppercase tracking-[0.3em] text-sky-500">Featured Voice</span>
-              <p className="text-lg font-semibold">{FEATURED_VOICE_AUTHOR.name}</p>
-              {[FEATURED_VOICE_AUTHOR.designation, FEATURED_VOICE_AUTHOR.country].filter(Boolean).length > 0 ? (
-                <p className="text-sm font-medium text-sky-500">
-                  {[FEATURED_VOICE_AUTHOR.designation, FEATURED_VOICE_AUTHOR.country].filter(Boolean).join(' • ')}
-                </p>
-              ) : null}
-              <p className="text-sm text-sky-600">
-                Reflections from Australia on how the Who Am I series reshapes a human life.
-              </p>
             </div>
           </div>
 
@@ -226,11 +251,14 @@ export default async function Testimonials() {
                             sizes="(min-width: 768px) 104px, 92px"
                           />
                         </div>
-                        <div className="space-y-1">
-                          <span className="text-sm font-semibold uppercase tracking-[0.3em] text-sky-500">
-                            Testimonial
+                        <div className="space-y-1.5">
+                          {testimonial.title ? (
+                            <p className="text-base font-semibold text-sky-700">{testimonial.title}</p>
+                          ) : null}
+                          <span className="text-sm font-semibold uppercase tracking-[0.1em] text-sky-500">
+                            Testimonial By
                           </span>
-                          <p className="text-base font-semibold text-sky-800">{testimonial.name}</p>
+                          <p className="!mt-0 text-sm font-semibold text-sky-800">{testimonial.name}</p>
                           {[testimonial.designation, testimonial.country].filter(Boolean).length > 0 ? (
                             <p className="text-sm font-medium text-sky-500">
                               {[testimonial.designation, testimonial.country].filter(Boolean).join(' • ')}
