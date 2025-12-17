@@ -13,7 +13,7 @@ const quickLinks = [
   { label: 'Who Am I – Part 2', href: '/wai2' },
   { label: 'Who Am I – Part 3', href: '/wai3' },
   { label: 'Who Am I – Part 4', href: '/wai4' },
-  { label: 'Books & Publications', href: 'https://santoshsachdeva.com/books/' }
+  // { label: 'Books & Publications', href: 'https://santoshsachdeva.com/books/' }
 ]
 
 const seriesLinks = [
@@ -108,6 +108,14 @@ export function Footer({ className }: FooterProps) {
                 </a>
               </li>
               <li className="text-white/80">Mumbai · India</li>
+              <li>
+                <a
+                  href="/contact"
+                  className="text-white/85 transition hover:text-white hover:underline"
+                >
+                  Contact Us
+                </a>
+              </li>
               {socialLinks.map((link) => (
                 <li key={link.label}>
                   <a
