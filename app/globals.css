@@ -2,7 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: light; }
+:root {
+  color-scheme: light;
+  font-size: max(22px, calc(1.1vw + 2px));
+}
 body { @apply bg-white text-slate-900 antialiased overflow-x-hidden; }
 .container { @apply max-w-6xl mx-auto; }
 .full-bleed {

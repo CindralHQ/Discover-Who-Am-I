@@ -25,7 +25,7 @@ const baseButtonClass =
   'flex h-12 w-12 items-center justify-center rounded-full shadow-lg backdrop-blur-md transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
 
 const FONT_SCALE_MIN = 0.9
-const FONT_SCALE_MAX = 1.25
+const FONT_SCALE_MAX = 1.375
 const FONT_SCALE_STEP = 0.1
 const FONT_SCALE_STORAGE_KEY = 'dwai-font-scale'
 
@@ -76,7 +76,7 @@ export function BackgroundAudio() {
   const pathname = usePathname()
   const [isMuted, setIsMuted] = useState(false)
   const [hasInteracted, setHasInteracted] = useState(false)
-  const [fontScale, setFontScale] = useState(1)
+  const [fontScale, setFontScale] = useState(FONT_SCALE_MAX)
   const [fontScaleInitialized, setFontScaleInitialized] = useState(false)
 
   useEffect(() => {
@@ -149,25 +149,26 @@ export function BackgroundAudio() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
+    window.localStorage.removeItem(FONT_SCALE_STORAGE_KEY)
     const stored = window.localStorage.getItem(FONT_SCALE_STORAGE_KEY)
     if (stored) {
       const parsed = Number(stored)
       if (!Number.isNaN(parsed)) {
         const clamped = Math.min(FONT_SCALE_MAX, Math.max(FONT_SCALE_MIN, parsed))
-        document.documentElement.style.fontSize = `${(clamped * 100).toFixed(0)}%`
+        document.documentElement.style.fontSize = `${(clamped * 100).toFixed(2)}%`
         setFontScale(clamped)
         setFontScaleInitialized(true)
         return
       }
     }
-    document.documentElement.style.fontSize = '100%'
-    setFontScale(1)
+    document.documentElement.style.fontSize = `${(FONT_SCALE_MAX * 100).toFixed(2)}%`
+    setFontScale(FONT_SCALE_MAX)
     setFontScaleInitialized(true)
   }, [])
 
   useEffect(() => {
     if (!fontScaleInitialized || typeof window === 'undefined') return
-    document.documentElement.style.fontSize = `${(fontScale * 100).toFixed(0)}%`
+    document.documentElement.style.fontSize = `${(fontScale * 100).toFixed(2)}%`
     window.localStorage.setItem(FONT_SCALE_STORAGE_KEY, String(fontScale))
   }, [fontScale, fontScaleInitialized])
 
