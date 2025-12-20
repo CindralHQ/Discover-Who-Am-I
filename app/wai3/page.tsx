@@ -151,7 +151,7 @@ export default async function WaiThreePage() {
           <div className="space-y-6">
             <div className="space-y-2">
               <p className="text-sm font-medium uppercase tracking-[0.4em] text-white/70">Who Am I Series</p>
-              <h1 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">Part III</h1>
+              <h1 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">Part III - Ascent</h1>
               <p className="text-xl font-semibold text-white">Journey to Sahasrar: The Final Ascent of Consciousness</p>
             </div>
             <p className="text-lg leading-8 text-white/90">

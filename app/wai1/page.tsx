@@ -148,7 +148,7 @@ export default async function WaiOnePage() {
               <div className="space-y-6">
                 <div className="space-y-2">
                   <p className="text-sm font-medium uppercase tracking-[0.4em] text-white/70">Who Am I Series</p>
-                  <h1 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">Part I</h1>
+                  <h1 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">Part I - Purification</h1>
                   <p className="text-xl font-semibold text-white">
                     Understanding the Role of Chakras & Kundalini Shakti
                   </p>

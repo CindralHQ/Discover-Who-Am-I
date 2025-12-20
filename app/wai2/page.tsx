@@ -137,7 +137,7 @@ export default async function WaiTwoPage() {
           <div className="space-y-6">
             <div className="space-y-2">
               <p className="text-sm font-medium uppercase tracking-[0.4em] text-white/70">Who Am I Series</p>
-                  <h1 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">Part II</h1>
+                  <h1 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">Part II - Blossoming</h1>
               <p className="text-xl font-semibold text-white">Shaktipat & Blossoming of the Spiritual Heart</p>
             </div>
             <p className="text-lg leading-8 text-white/90">

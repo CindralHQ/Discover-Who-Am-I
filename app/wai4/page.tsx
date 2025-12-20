@@ -144,7 +144,7 @@ export default async function WaiFourPage() {
           <div className="space-y-6">
             <div className="space-y-2">
               <p className="text-sm font-medium uppercase tracking-[0.4em] text-white/70">Who Am I Series</p>
-              <h1 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">Part IV</h1>
+              <h1 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">Part IV - Beyond The Veil</h1>
               <p className="text-xl font-semibold text-white">
                 Beyond the Veil: The Body of Gold 
               </p>
