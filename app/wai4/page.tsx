@@ -4,12 +4,13 @@ import { cookies } from 'next/headers'
 import { ButtonLink } from '@/components/ui/Button'
 import { Quote } from '@/components/ui/Quote'
 import { ThemeName, themeLibrary } from '@/lib/designSystem'
-import { buildWooCheckoutUrl } from '@/lib/woocommerce'
+import { buildWooCheckoutUrl, fetchWooProduct } from '@/lib/woocommerce'
 import { LEARNPRESS_TOKEN_COOKIE, userHasCourseAccess } from '@/lib/learnpress'
 import { ChakraNav } from '@/components/ui/ChakraNav'
 import { EnrollBlock } from '@/components/ui/EnrollBlock'
 import { WaiIntroOverlay } from '@/components/ui/WaiIntroOverlay'
 import { LightboxImage } from '@/components/ui/LightboxImage'
+import { getLocalizedCoursePrice } from '@/lib/pricing'
 import sahasraraIcon from '@/assets/icons/Sahasrara.png'
 import heroVisual from '@/assets/visuals/Sahasrara-Blossoming-2.jpeg'
 import granthiVisual from '@/assets/visuals/All-Chakras-Aligned.png'
@@ -115,6 +116,20 @@ export default async function WaiFourPage() {
     : false
   const primaryCtaHref = hasCourseAccess ? '/my-courses' : ENROLL_URL
   const primaryCtaLabel = hasCourseAccess ? 'Continue Learning' : 'Enroll Now'
+  const localizedPrice = getLocalizedCoursePrice('wai4')
+  const sanitizePrice = (value?: string | null) => {
+    if (!value) return null
+    const withoutTags = value.replace(/<[^>]*>?/g, ' ').replace(/\s+/g, ' ').trim()
+    return withoutTags.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number.parseInt(code, 10)))
+  }
+  let dynamicPrice: string | null = null
+  try {
+    const product = await fetchWooProduct(WAI_FOUR_PRODUCT_ID)
+    dynamicPrice = sanitizePrice(product.price_html) ?? sanitizePrice(product.price)
+  } catch (error) {
+    console.error('[wai4] Unable to fetch WooCommerce price', error)
+  }
+  const displayedPrice = dynamicPrice ?? localizedPrice
   const palette = themeLibrary[THEME].classes
   const headingClass = palette.card.title
 
@@ -308,7 +323,7 @@ export default async function WaiFourPage() {
 
       <EnrollBlock
         theme={THEME}
-        price="INR 15,000"
+        price={displayedPrice}
         description={
           <>
             <p>This is not just a course - it is a sacred transmission.</p>

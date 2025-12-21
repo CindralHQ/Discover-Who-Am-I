@@ -4,12 +4,13 @@ import { cookies } from 'next/headers'
 import { ButtonLink } from '@/components/ui/Button'
 import { Quote } from '@/components/ui/Quote'
 import { ThemeName, themeLibrary } from '@/lib/designSystem'
-import { buildWooCheckoutUrl } from '@/lib/woocommerce'
+import { buildWooCheckoutUrl, fetchWooProduct } from '@/lib/woocommerce'
 import { LEARNPRESS_TOKEN_COOKIE, userHasCourseAccess } from '@/lib/learnpress'
 import { ChakraNav } from '@/components/ui/ChakraNav'
 import { EnrollBlock } from '@/components/ui/EnrollBlock'
 import { WaiIntroOverlay } from '@/components/ui/WaiIntroOverlay'
 import { LightboxImage } from '@/components/ui/LightboxImage'
+import { getLocalizedCoursePrice } from '@/lib/pricing'
 import anahataIcon from '@/assets/icons/Anahata.png'
 import heroVisual from '@/assets/visuals/Blue-Guru-Blessings.png'
 import ascentVisual from '@/assets/visuals/All-Chakras-Aligned.png'
@@ -108,6 +109,20 @@ export default async function WaiTwoPage() {
     : false
   const primaryCtaHref = hasCourseAccess ? '/my-courses' : ENROLL_URL
   const primaryCtaLabel = hasCourseAccess ? 'Continue Learning' : 'Enroll Now'
+  const localizedPrice = getLocalizedCoursePrice('wai2')
+  const sanitizePrice = (value?: string | null) => {
+    if (!value) return null
+    const withoutTags = value.replace(/<[^>]*>?/g, ' ').replace(/\s+/g, ' ').trim()
+    return withoutTags.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number.parseInt(code, 10)))
+  }
+  let dynamicPrice: string | null = null
+  try {
+    const product = await fetchWooProduct(WAI_TWO_PRODUCT_ID)
+    dynamicPrice = sanitizePrice(product.price_html) ?? sanitizePrice(product.price)
+  } catch (error) {
+    console.error('[wai2] Unable to fetch WooCommerce price', error)
+  }
+  const displayedPrice = dynamicPrice ?? localizedPrice
   const palette = themeLibrary[THEME].classes
   const headingClass = palette.card.title
 
@@ -290,7 +305,7 @@ export default async function WaiTwoPage() {
 
       <EnrollBlock
         theme={THEME}
-        price="INR 12,000"
+        price={displayedPrice}
         description="Embark on a sacred journey inward. Allow hidden wisdom to awaken, let the heart open, and feel the light of the soul rise."
         buttonHref={primaryCtaHref}
         buttonLabel={primaryCtaLabel}

@@ -95,8 +95,9 @@ export default async function Testimonials() {
   const videoTestimonials: DriveVideoTestimonial[] = await fetchVideoTestimonials()
   const remoteTestimonials = await fetchTestimonials()
   const prioritizedVideoTitles = [
-    'rohit arya talks about kundalini master santosh sachdeva',
-    'the secret to the meaning of life delivered'
+    'Initiation Through Ignition by Sacred Visuals',
+    'the secret to the meaning of life delivered',
+    'Observe the experience'
   ]
   const normalizeTitle = (title?: string) => title?.toLowerCase().replace(/\s+/g, ' ').trim() ?? ''
   const prioritizedTitleLookup = new Map(

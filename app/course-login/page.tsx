@@ -7,6 +7,12 @@ import { useRouter } from 'next/navigation'
 
 import homeLogo from '@/assets/Logo.png'
 
+const LP_BASE_URL =
+  process.env.NEXT_PUBLIC_LP_SITE_URL ||
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  'https://wordpress.discoverwhoami.com'
+const FORGOT_PASSWORD_URL = `${LP_BASE_URL.replace(/\/+$/, '')}/wp-login.php?action=lostpassword`
+
 export default function CourseLoginPage() {
   const router = useRouter()
   const [username, setUsername] = useState('')
@@ -103,6 +109,14 @@ export default function CourseLoginPage() {
               {isSubmitting ? 'Signing in…' : 'Sign In'}
             </button>
           </form>
+          <div className="flex items-center justify-between text-sm text-sky-600">
+            <Link href={FORGOT_PASSWORD_URL} target="_blank" rel="noreferrer" className="font-semibold underline">
+              Forgot password?
+            </Link>
+            <Link href="/contact" className="font-semibold underline">
+              Contact support
+            </Link>
+          </div>
           <p className="text-center text-sm text-sky-500">
             Your credentials are encrypted and stored securely to power your private library.
           </p>

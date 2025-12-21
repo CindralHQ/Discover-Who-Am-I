@@ -6,7 +6,6 @@ import { LearnPressLogoutButton } from '@/components/ui/LearnPressLogoutButton'
 import {
   fetchLearnPressCourse,
   fetchLearnPressLesson,
-  getLearnPressSiteUrl,
   type LearnPressCurriculumItem,
   type LearnPressCurriculumSection,
   type LearnPressLesson,
@@ -15,6 +14,7 @@ import {
   LEARNPRESS_USER_COOKIE,
 } from '@/lib/learnpress'
 import { LessonFeedbackForm } from '@/components/ui/LessonFeedbackForm'
+import { CourseLessonAccess } from '@/components/ui/CourseLessonAccess'
 
 type LearnPressUserInfo = {
   id?: string
@@ -132,7 +132,6 @@ export default async function CourseDetailPage({
   const cookieStore = cookies()
   const authToken = cookieStore.get(LEARNPRESS_TOKEN_COOKIE)?.value
   const userInfo = parseUserInfo(cookieStore.get(LEARNPRESS_USER_COOKIE)?.value)
-  const siteUrl = getLearnPressSiteUrl()
 
   if (!authToken) {
     return (
@@ -176,8 +175,6 @@ export default async function CourseDetailPage({
   }
 
   const title = course.title?.rendered ?? course.name ?? `Course #${course.id}`
-  const description = stripHtml(course.excerpt?.rendered) || stripHtml(course.content?.rendered)
-  const courseUrl = course.link ?? `${siteUrl}/course/${course.slug ?? course.id}`
   const sections = extractSections(course)
   const flatLessons = sections.flatMap((section) => section.lessons)
   const requestedLessonId = searchParams?.lesson ? Number(searchParams.lesson) : undefined
@@ -197,6 +194,16 @@ export default async function CourseDetailPage({
   }
 
   const activeLessonTitle = lesson?.title?.rendered ?? activeLesson?.title ?? ''
+  const lessonHtml =
+    (lesson?.content as any)?.rendered ??
+    (lesson as any)?.content?.rendered ??
+    (lesson as any)?.content ??
+    (lesson as any)?.content?.raw ??
+    null
+  const friendlyLessonError =
+    lessonError && lessonError.toLowerCase().includes('cannot view')
+      ? 'Access is restricted. Please complete Part I and any previous lessons to unlock this content.'
+      : lessonError
 
   return (
     <div className="container space-y-6">
@@ -211,11 +218,6 @@ export default async function CourseDetailPage({
           </div>
           <LearnPressLogoutButton />
         </div>
-        <div className="mt-4 flex flex-wrap gap-3 text-sm text-sky-600">
-          <span className="rounded-full border border-sky-100 px-3 py-1 font-semibold">ID #{course.id}</span>
-          {course.status ? <span>Status: {course.status.replaceAll('_', ' ')}</span> : null}
-          {course.price ? <span>Price: {course.price}</span> : null}
-        </div>
         <div className="mt-4">
           <Link
             href="/my-courses"
@@ -226,84 +228,46 @@ export default async function CourseDetailPage({
         </div>
       </header>
 
-      <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
-        <aside className="space-y-6 rounded-3xl border border-sky-100 bg-white/95 p-6 shadow-sm">
+      <CourseLessonAccess
+        courseId={course.id}
+        sections={sections}
+        activeLessonId={activeLesson?.id}
+        activeLessonTitle={activeLessonTitle}
+        disableCompletion={Boolean(lessonError)}
+      >
+        {activeLesson ? (
+          <>
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-sky-400">Lesson</p>
+            <h2 className="text-2xl font-semibold text-sky-900">
+              {lesson?.title?.rendered ?? activeLesson.title}
+            </h2>
+            {lessonError ? (
+              <div className="rounded-2xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700">
+                {friendlyLessonError}
+              </div>
+            ) : lesson ? (
+              <article
+                suppressHydrationWarning
+                className="prose prose-sky max-w-none text-sky-800 prose-headings:mt-6 prose-headings:mb-3 prose-ul:list-disc prose-ul:pl-6 prose-ol:list-decimal prose-ol:pl-6 prose-iframe:w-full prose-iframe:aspect-video"
+                dangerouslySetInnerHTML={{
+                  __html:
+                    lessonHtml ||
+                    '<p>Lesson content is not available yet. Please refresh or open the course in WordPress.</p>',
+                }}
+              />
+            ) : (
+              <p className="text-sm text-sky-700">Loading lesson content…</p>
+            )}
+          </>
+        ) : (
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-sky-900">Curriculum</h2>
-            {description ? <p className="text-sm text-sky-700">{description}</p> : null}
+            <p className="text-lg font-semibold text-sky-900">No lessons yet</p>
+            <p className="text-sm text-sky-700">
+              Once lessons are added to this course they&apos;ll appear here automatically.
+            </p>
           </div>
-          {sections.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-sky-200 bg-sky-50/70 p-4 text-sm text-sky-700">
-              <p className="font-semibold">No lessons detected.</p>
-              <p className="mt-1">
-                Publish the course outline in the LMS or refresh to sync the latest data.
-              </p>
-            </div>
-          ) : (
-            <ul className="space-y-4">
-              {sections.map((section) => (
-                <li key={section.id} className="space-y-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-400">{section.title}</p>
-                  <ul className="space-y-1">
-                    {section.lessons.map((lessonItem) => {
-                      const isActive = activeLesson?.id === lessonItem.id
-                      return (
-                        <li key={lessonItem.id}>
-                          <Link
-                            href={`/my-courses/${course.id}?lesson=${lessonItem.id}`}
-                            className={`block rounded-2xl px-3 py-2 text-sm transition ${
-                              isActive
-                                ? 'bg-sky-600 text-white shadow-sm'
-                                : 'text-sky-800 hover:bg-sky-50'
-                            }`}
-                          >
-                            {lessonItem.title}
-                            {lessonItem.type && !isLessonType(lessonItem.type) ? (
-                              <span className="ml-2 text-xs uppercase tracking-[0.3em] text-sky-200">
-                                {lessonItem.type}
-                              </span>
-                            ) : null}
-                          </Link>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </li>
-              ))}
-            </ul>
-          )}
-        </aside>
-
-        <main className="space-y-4 rounded-3xl border border-sky-100 bg-white/95 p-6 shadow-sm">
-          {activeLesson ? (
-            <>
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-sky-400">Lesson</p>
-              <h2 className="text-2xl font-semibold text-sky-900">
-                {lesson?.title?.rendered ?? activeLesson.title}
-              </h2>
-              {lessonError ? (
-                <div className="rounded-2xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700">
-                  {lessonError}
-                </div>
-              ) : lesson ? (
-                <article
-                  className="prose prose-sky max-w-none text-sky-800"
-                  dangerouslySetInnerHTML={{ __html: lesson.content?.rendered ?? '<p>No content yet.</p>' }}
-                />
-              ) : (
-                <p className="text-sm text-sky-700">Loading lesson content…</p>
-              )}
-            </>
-          ) : (
-            <div className="space-y-2">
-              <p className="text-lg font-semibold text-sky-900">No lessons yet</p>
-              <p className="text-sm text-sky-700">
-                Once lessons are added to this course they&apos;ll appear here automatically.
-              </p>
-            </div>
-          )}
-        </main>
-      </div>
+        )}
+      </CourseLessonAccess>
       {lesson ? (
         <LessonFeedbackForm
           courseId={course.id}

@@ -117,6 +117,32 @@ export async function fetchWooProducts(options: FetchWooProductsOptions = {}): P
   return data
 }
 
+export async function fetchWooProduct(productId: number): Promise<WooProduct> {
+  if (!productId || !Number.isFinite(productId)) {
+    throw new Error('A valid product ID is required to fetch WooCommerce product details.')
+  }
+
+  const { storeUrl, consumerKey, consumerSecret } = getWooEnvConfig()
+  const url = new URL(`/wp-json/wc/v3/products/${productId}`, `${storeUrl}/`)
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Basic ${Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64')}`,
+      Accept: 'application/json',
+    },
+    next: { revalidate: 300 },
+  })
+
+  if (!response.ok) {
+    const body = await response.text()
+    throw new Error(
+      `WooCommerce product request failed (${response.status} ${response.statusText}): ${body.slice(0, 200)}`
+    )
+  }
+
+  return (await response.json()) as WooProduct
+}
+
 export function buildWooCheckoutUrl(
   productId: number,
   options: { quantity?: number; redirectToCheckout?: boolean; thankYouUrl?: string | null } = {}

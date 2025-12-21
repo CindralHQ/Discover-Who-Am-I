@@ -4,7 +4,7 @@
 
 :root {
   color-scheme: light;
-  font-size: max(18px, calc(1vw + 1px));
+  font-size: max(16px, calc(0.95vw + 1px));
 }
 body { @apply bg-white text-slate-900 antialiased overflow-x-hidden; }
 .container { @apply max-w-6xl mx-auto; }
@@ -16,6 +16,9 @@ body { @apply bg-white text-slate-900 antialiased overflow-x-hidden; }
 }
 .prose h2 { @apply text-3xl font-semibold mt-12 mb-4; }
 .prose h3 { @apply text-xl font-semibold mt-8 mb-3; }
+.prose ul { list-style: disc; padding-left: 1.5rem; }
+.prose ol { list-style: decimal; padding-left: 1.5rem; }
+.prose iframe { width: 100%; aspect-ratio: 16 / 9; }
 
 .doc-article { @apply space-y-4 text-sky-900; }
 .doc-article * { text-align: left !important; }
