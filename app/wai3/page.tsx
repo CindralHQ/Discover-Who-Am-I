@@ -4,12 +4,13 @@ import { cookies } from 'next/headers'
 import { ButtonLink } from '@/components/ui/Button'
 import { Quote } from '@/components/ui/Quote'
 import { ThemeName, themeLibrary } from '@/lib/designSystem'
-import { buildWooCheckoutUrl } from '@/lib/woocommerce'
+import { buildWooCheckoutUrl, fetchWooProduct } from '@/lib/woocommerce'
 import { LEARNPRESS_TOKEN_COOKIE, userHasCourseAccess } from '@/lib/learnpress'
 import { ChakraNav } from '@/components/ui/ChakraNav'
 import { EnrollBlock } from '@/components/ui/EnrollBlock'
 import { WaiIntroOverlay } from '@/components/ui/WaiIntroOverlay'
 import { LightboxImage } from '@/components/ui/LightboxImage'
+import { getLocalizedCoursePrice } from '@/lib/pricing'
 import vishuddhaIcon from '@/assets/icons/Vishuddha.png'
 import heroVisual from '@/assets/visuals/Sahasrar-Blossoming.png'
 import crownRoadmapVisual from '@/assets/visuals/Ajna-Chakra-Concentration.png'
@@ -120,8 +121,34 @@ export default async function WaiThreePage() {
         authToken
       )
     : false
+  const hasPartTwoAccess = authToken
+    ? await userHasCourseAccess(
+        ['wai part 2', 'who am i - part ii', 'part ii', 'part 2', 'wai2'],
+        authToken
+      )
+    : false
   const primaryCtaHref = hasCourseAccess ? '/my-courses' : ENROLL_URL
-  const primaryCtaLabel = hasCourseAccess ? 'Continue Learning' : 'Enroll Now'
+  const primaryCtaLabel = hasCourseAccess
+    ? 'Continue Learning'
+    : hasPartTwoAccess
+      ? authToken
+        ? 'Enroll Now'
+        : 'Register to Enroll'
+      : 'Complete Part II first'
+  const localizedPrice = getLocalizedCoursePrice('wai3')
+  const sanitizePrice = (value?: string | null) => {
+    if (!value) return null
+    const withoutTags = value.replace(/<[^>]*>?/g, ' ').replace(/\s+/g, ' ').trim()
+    return withoutTags.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number.parseInt(code, 10)))
+  }
+  let dynamicPrice: string | null = null
+  try {
+    const product = await fetchWooProduct(WAI_THREE_PRODUCT_ID)
+    dynamicPrice = sanitizePrice(product.price_html) ?? sanitizePrice(product.price)
+  } catch (error) {
+    console.error('[wai3] Unable to fetch WooCommerce price', error)
+  }
+  const displayedPrice = dynamicPrice ?? localizedPrice
   const palette = themeLibrary[THEME].classes
   const headingClass = palette.card.title
 
@@ -151,7 +178,7 @@ export default async function WaiThreePage() {
           <div className="space-y-6">
             <div className="space-y-2">
               <p className="text-sm font-medium uppercase tracking-[0.4em] text-white/70">Who Am I Series</p>
-              <h1 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">Part III</h1>
+              <h1 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">Part III - Ascent</h1>
               <p className="text-xl font-semibold text-white">Journey to Sahasrar: The Final Ascent of Consciousness</p>
             </div>
             <p className="text-lg leading-8 text-white/90">
@@ -307,7 +334,7 @@ export default async function WaiThreePage() {
 
       <EnrollBlock
         theme={THEME}
-        price="INR 15,000"
+        price={displayedPrice}
         description={
           <>
             <p>
@@ -319,8 +346,19 @@ export default async function WaiThreePage() {
             </p>
           </>
         }
-        buttonHref={primaryCtaHref}
+        buttonHref={
+          hasCourseAccess || hasPartTwoAccess
+            ? authToken
+              ? primaryCtaHref
+              : `/course-register?next=${encodeURIComponent(primaryCtaHref)}`
+            : undefined
+        }
         buttonLabel={primaryCtaLabel}
+        helperText={
+          !hasPartTwoAccess && !hasCourseAccess
+            ? 'Part III unlocks after completing Part II – Blossoming.'
+            : undefined
+        }
       />
         </div>
       </div>

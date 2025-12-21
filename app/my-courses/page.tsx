@@ -41,7 +41,41 @@ function getCourseTitle(course: LearnPressCourse) {
 }
 
 function getCourseSummary(course: LearnPressCourse) {
-  return stripHtml(course.excerpt?.rendered || course.content?.rendered) || 'No description available yet.'
+  return stripHtml(course.excerpt?.rendered || course.content?.rendered) || ''
+}
+
+function normalise(value?: string | null) {
+  return value?.toLowerCase() ?? ''
+}
+
+function isPartOneCourse(course: LearnPressCourse) {
+  const fields = [
+    course.slug,
+    course.name,
+    course.title?.rendered
+  ].map(normalise)
+
+  return fields.some((text) =>
+    text?.includes('part 1') ||
+    text?.includes('part i') ||
+    text?.includes('wai1') ||
+    text?.includes('purification')
+  )
+}
+
+function isPartTwoCourse(course: LearnPressCourse) {
+  const fields = [
+    course.slug,
+    course.name,
+    course.title?.rendered
+  ].map(normalise)
+
+  return fields.some((text) =>
+    text?.includes('part 2') ||
+    text?.includes('part ii') ||
+    text?.includes('wai2') ||
+    text?.includes('blossoming')
+  )
 }
 
 export default async function MyCoursesPage() {
@@ -125,10 +159,15 @@ export default async function MyCoursesPage() {
         </div>
       ) : (
         <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {courses.map((course) => {
+          {(() => {
+            const hasPartOne = courses.some((course) => isPartOneCourse(course))
+
+            return courses.map((course) => {
             const title = getCourseTitle(course)
             const summary = getCourseSummary(course)
-            const learnUrl = `/my-courses/${course.id}`
+            const requiresPartOne = isPartTwoCourse(course)
+            const canAccess = !requiresPartOne || hasPartOne
+            const learnUrl = canAccess ? `/my-courses/${course.id}` : ''
             const statusLabel = course.status ? course.status.replaceAll('_', ' ') : 'course'
 
             return (
@@ -140,22 +179,38 @@ export default async function MyCoursesPage() {
                   <p className="text-xs uppercase tracking-[0.35em] text-sky-400">{statusLabel}</p>
                   <h2 className="text-xl font-semibold leading-tight">{title}</h2>
                 </div>
-                <p className="flex-1 pt-3 text-sm leading-6 text-sky-700">{summary}</p>
-                <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-sky-500">
-                  <span className="rounded-full bg-sky-50 px-3 py-1 font-semibold text-sky-700">#{course.id}</span>
-                  {course.price ? <span>Price: {course.price}</span> : null}
-                </div>
+                {summary ? (
+                  <p className="flex-1 pt-3 text-sm leading-6 text-sky-700">{summary}</p>
+                ) : (
+                  <div className="flex-1" />
+                )}
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <Link
-                    href={learnUrl}
-                    className="inline-flex flex-1 min-w-[140px] items-center justify-center rounded-2xl border border-sky-200 px-4 py-2 text-sm font-semibold text-sky-900 transition hover:bg-sky-50"
-                  >
-                    Open course
-                  </Link>
+                  {canAccess ? (
+                    <Link
+                      href={learnUrl}
+                      className="inline-flex flex-1 min-w-[140px] items-center justify-center rounded-2xl border border-sky-200 px-4 py-2 text-sm font-semibold text-sky-900 transition hover:bg-sky-50"
+                    >
+                      Open course
+                    </Link>
+                  ) : (
+                    <div className="flex w-full flex-col gap-2">
+                      <button
+                        type="button"
+                        className="inline-flex w-full items-center justify-center rounded-2xl border border-sky-200 px-4 py-2 text-sm font-semibold text-sky-400"
+                        aria-disabled
+                      >
+                        Unlock after Part I
+                      </button>
+                      <p className="text-xs text-sky-500">
+                        Complete Part I – Purification to access this course.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </li>
             )
-          })}
+            })
+          })()}
         </ul>
       )}
     </div>

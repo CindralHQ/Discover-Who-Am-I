@@ -159,10 +159,31 @@ async function requestLearnPressTokenRaw({
   })
 
   if (!response.ok) {
-    const details = await response.text()
-    throw new Error(
-      `LearnPress token request failed (${response.status} ${response.statusText}): ${details.slice(0, 160)}`
-    )
+    const raw = await response.text()
+    let parsedMessage: string | null = null
+    let parsedCode: string | null = null
+    try {
+      const json = JSON.parse(raw)
+      parsedMessage = typeof json.message === 'string' ? json.message : null
+      parsedCode = typeof json.code === 'string' ? json.code : null
+    } catch {
+      parsedMessage = null
+    }
+
+    const cleanMessage = (parsedMessage ?? raw)
+      .replace(/<[^>]*>?/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+
+    const normalizedCode = parsedCode?.toLowerCase() ?? ''
+    const friendly =
+      normalizedCode.includes('incorrect_password') || normalizedCode.includes('invalid_username')
+        ? 'Incorrect email or password. Please try again.'
+        : normalizedCode.includes('invalid_email')
+          ? 'The email address looks invalid.'
+          : cleanMessage || 'Unable to sign in right now.'
+
+    throw new Error(friendly)
   }
 
   const data = (await response.json()) as LearnPressTokenResponse
@@ -301,6 +322,8 @@ export async function fetchLearnPressLesson(
   }
 
   const url = new URL(`/wp-json/learnpress/v1/lessons/${lessonId}`, `${siteUrl}/`)
+  // use view context so enrolled users can access without edit capabilities
+  url.searchParams.set('context', 'view')
   const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${authToken}`,

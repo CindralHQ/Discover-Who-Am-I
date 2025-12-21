@@ -18,7 +18,8 @@ const links = [
   { href: '/wai3', label: 'WAI Part 3' },
   { href: '/wai4', label: 'WAI Part 4' },
   { href: '/testimonials', label: 'Testimonials' },
-  { href: 'https://santoshsachdeva.com/books/', label: 'Books' }
+  { href: '/contact', label: 'Contact Us' },
+  // { href: 'https://santoshsachdeva.com/books/', label: 'Books' }
 ]
 
 type NavProps = {

@@ -7,9 +7,15 @@ import { useRouter } from 'next/navigation'
 
 import homeLogo from '@/assets/Logo.png'
 
+const LP_BASE_URL =
+  process.env.NEXT_PUBLIC_LP_SITE_URL ||
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  'https://wordpress.discoverwhoami.com'
+const FORGOT_PASSWORD_URL = `${LP_BASE_URL.replace(/\/+$/, '')}/wp-login.php?action=lostpassword`
+
 export default function CourseLoginPage() {
   const router = useRouter()
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -23,7 +29,7 @@ export default function CourseLoginPage() {
       const response = await fetch('/api/course-api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username: email.trim(), password }),
       })
 
       const payload = await response.json()
@@ -61,19 +67,19 @@ export default function CourseLoginPage() {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <label htmlFor="username" className="text-sm font-semibold text-sky-900">
-                Username
+              <label htmlFor="email" className="text-sm font-semibold text-sky-900">
+                Email
               </label>
               <input
-                id="username"
-                name="username"
-                type="text"
-                autoComplete="username"
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
                 required
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
                 className="w-full rounded-2xl border border-sky-200 bg-white px-4 py-3 text-base text-sky-900 shadow-sm transition placeholder:text-sky-300 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
-                placeholder="your.username"
+                placeholder="you@example.com"
               />
             </div>
             <div className="space-y-2">
@@ -103,6 +109,14 @@ export default function CourseLoginPage() {
               {isSubmitting ? 'Signing in…' : 'Sign In'}
             </button>
           </form>
+          <div className="flex items-center justify-between text-sm text-sky-600">
+            <Link href={FORGOT_PASSWORD_URL} target="_blank" rel="noreferrer" className="font-semibold underline">
+              Forgot password?
+            </Link>
+            <Link href="/contact" className="font-semibold underline">
+              Contact support
+            </Link>
+          </div>
           <p className="text-center text-sm text-sky-500">
             Your credentials are encrypted and stored securely to power your private library.
           </p>

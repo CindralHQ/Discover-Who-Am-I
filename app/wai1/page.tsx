@@ -4,12 +4,13 @@ import { cookies } from 'next/headers'
 import { ButtonLink } from '@/components/ui/Button'
 import { Quote } from '@/components/ui/Quote'
 import { ThemeName, themeLibrary } from '@/lib/designSystem'
-import { buildWooCheckoutUrl } from '@/lib/woocommerce'
+import { buildWooCheckoutUrl, fetchWooProduct } from '@/lib/woocommerce'
 import { LEARNPRESS_TOKEN_COOKIE, userHasCourseAccess } from '@/lib/learnpress'
 import { ChakraNav } from '@/components/ui/ChakraNav'
 import { EnrollBlock } from '@/components/ui/EnrollBlock'
 import { WaiIntroOverlay } from '@/components/ui/WaiIntroOverlay'
 import { LightboxImage } from '@/components/ui/LightboxImage'
+import { getLocalizedCoursePrice } from '@/lib/pricing'
 import manipuraIcon from '@/assets/icons/Manipura.png'
 import heroVisual from '@/assets/visuals/Body-On-Fire.png'
 import roadmapVisual from '@/assets/visuals/All-Chakras-Aligned.png'
@@ -116,8 +117,26 @@ export default async function WaiOnePage() {
         authToken
       )
     : false
-  const primaryCtaHref = hasCourseAccess ? '/my-courses' : ENROLL_URL
-  const primaryCtaLabel = hasCourseAccess ? 'Continue Learning' : 'Enroll Now'
+  const primaryCtaHref = hasCourseAccess
+    ? '/my-courses'
+    : authToken
+      ? ENROLL_URL
+      : `/course-register?next=${encodeURIComponent(ENROLL_URL)}`
+  const primaryCtaLabel = hasCourseAccess ? 'Continue Learning' : authToken ? 'Enroll Now' : 'Register to Enroll'
+  const localizedPrice = getLocalizedCoursePrice('wai1')
+  const sanitizePrice = (value?: string | null) => {
+    if (!value) return null
+    const withoutTags = value.replace(/<[^>]*>?/g, ' ').replace(/\s+/g, ' ').trim()
+    return withoutTags.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number.parseInt(code, 10)))
+  }
+  let dynamicPrice: string | null = null
+  try {
+    const product = await fetchWooProduct(WAI_ONE_PRODUCT_ID)
+    dynamicPrice = sanitizePrice(product.price_html) ?? sanitizePrice(product.price)
+  } catch (error) {
+    console.error('[wai1] Unable to fetch WooCommerce price', error)
+  }
+  const displayedPrice = dynamicPrice ?? localizedPrice
 
   const palette = themeLibrary[THEME].classes
   const headingClass = palette.card.title
@@ -148,7 +167,7 @@ export default async function WaiOnePage() {
               <div className="space-y-6">
                 <div className="space-y-2">
                   <p className="text-sm font-medium uppercase tracking-[0.4em] text-white/70">Who Am I Series</p>
-                  <h1 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">Part I</h1>
+                  <h1 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">Part I - Purification</h1>
                   <p className="text-xl font-semibold text-white">
                     Understanding the Role of Chakras & Kundalini Shakti
                   </p>
@@ -308,7 +327,7 @@ export default async function WaiOnePage() {
 
       <EnrollBlock
         theme={THEME}
-        price="INR 12,000"
+        price={displayedPrice}
         description="For the first time in the history of spiritual literature, the process of awakening has been documented with such vivid detail through illustrations. These teachings show how kundalini shakti purifies and activates the subtle body, transforming the human body, mind, and intellect. The result is a deep, positive influence on daily living."
         buttonHref={primaryCtaHref}
         buttonLabel={primaryCtaLabel}

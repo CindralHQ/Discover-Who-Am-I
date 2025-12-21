@@ -2,6 +2,7 @@ import { createSign } from 'crypto'
 
 export type SheetTestimonial = {
   name: string
+  title?: string
   testimonial: string
   photoUrl?: string
   designation?: string
@@ -640,6 +641,7 @@ export async function fetchTestimonials(): Promise<SheetTestimonial[]> {
   const headers = rawHeaders.map((header) => header.trim())
 
   const nameHeader = process.env.GOOGLE_SHEETS_NAME_HEADER ?? 'Name'
+  const titleHeader = process.env.GOOGLE_SHEETS_TITLE_HEADER ?? 'Title'
   const testimonialHeader = process.env.GOOGLE_SHEETS_TESTIMONIAL_HEADER ?? 'Testimonial'
   const permissionHeader = process.env.GOOGLE_SHEETS_PERMISSION_HEADER ?? 'Permission'
   const adminPermissionHeader = process.env.GOOGLE_SHEETS_ADMIN_PERMISSION_HEADER ?? 'Admin Permission'
@@ -648,6 +650,7 @@ export async function fetchTestimonials(): Promise<SheetTestimonial[]> {
   const countryHeader = process.env.GOOGLE_SHEETS_COUNTRY_HEADER ?? 'Country'
 
   const nameIndex = findHeaderIndex(headers, nameHeader, 'Your Name', 'Full Name')
+  const titleIndex = findHeaderIndex(headers, titleHeader, 'Story Title', 'Headline')
   const testimonialIndex = findHeaderIndex(
     headers,
     testimonialHeader,
@@ -679,7 +682,7 @@ export async function fetchTestimonials(): Promise<SheetTestimonial[]> {
     headers,
     designationHeader,
     'Role',
-    'Title'
+    titleIndex === -1 ? 'Title' : undefined
   )
   const countryIndex = findHeaderIndex(
     headers,
@@ -692,6 +695,7 @@ export async function fetchTestimonials(): Promise<SheetTestimonial[]> {
     '[fetchTestimonials] Header indices',
     JSON.stringify({
       nameIndex,
+      titleIndex,
       testimonialIndex,
       permissionIndex,
       adminPermissionIndex,
@@ -724,6 +728,7 @@ export async function fetchTestimonials(): Promise<SheetTestimonial[]> {
       }
 
       const nameValue = nameIndex >= 0 ? asString(row[nameIndex]) : undefined
+      const titleValue = titleIndex >= 0 ? asString(row[titleIndex]) : undefined
       const photoValue = photoIndex >= 0 ? asString(row[photoIndex]) : undefined
       const designationValue = designationIndex >= 0 ? asString(row[designationIndex]) : undefined
       const countryValue = countryIndex >= 0 ? asString(row[countryIndex]) : undefined
@@ -732,6 +737,7 @@ export async function fetchTestimonials(): Promise<SheetTestimonial[]> {
 
       const testimonialEntry: SheetTestimonial = {
         name: nameValue && nameValue.length > 0 ? nameValue : 'Anonymous Seeker',
+        title: titleValue && titleValue.length > 0 ? titleValue : undefined,
         testimonial,
         photoUrl,
         designation: designationValue && designationValue.length > 0 ? designationValue : undefined,
