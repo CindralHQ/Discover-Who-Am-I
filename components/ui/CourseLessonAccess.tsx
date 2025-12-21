@@ -25,6 +25,12 @@ type CourseLessonAccessProps = {
   children: React.ReactNode
   disableCompletion?: boolean
   serverCompletedIds?: number[]
+  completionCta?: {
+    href: string
+    label: string
+    title?: string
+    description?: string
+  }
 }
 
 const STORAGE_PREFIX = 'lp_progress_v2_'
@@ -36,7 +42,8 @@ export function CourseLessonAccess({
   activeLessonTitle,
   children,
   disableCompletion = false,
-  serverCompletedIds = []
+  serverCompletedIds = [],
+  completionCta
 }: CourseLessonAccessProps) {
   const router = useRouter()
   const flatLessons = useMemo(
@@ -161,6 +168,7 @@ export function CourseLessonAccess({
 
   const progressText =
     totalLessons > 0 ? `${completedCount}/${totalLessons} lessons marked complete` : ''
+  const isCourseComplete = totalLessons > 0 && completedCount >= totalLessons
 
   return (
     <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
@@ -250,6 +258,22 @@ export function CourseLessonAccess({
                   ? 'Saving…'
                   : 'Mark completed'}
             </button>
+          </div>
+        ) : null}
+        {completionCta && isCourseComplete ? (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 px-4 py-3 text-sm text-emerald-900">
+            <div className="space-y-0.5">
+              <p className="font-semibold">{completionCta.title ?? 'Course completed'}</p>
+              {completionCta.description ? (
+                <p className="text-xs text-emerald-700">{completionCta.description}</p>
+              ) : null}
+            </div>
+            <Link
+              href={completionCta.href}
+              className="inline-flex items-center justify-center rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-500"
+            >
+              {completionCta.label}
+            </Link>
           </div>
         ) : null}
         {completionError ? (

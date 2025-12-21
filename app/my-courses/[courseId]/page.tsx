@@ -5,6 +5,7 @@ import { cookies } from 'next/headers'
 import { LearnPressLogoutButton } from '@/components/ui/LearnPressLogoutButton'
 import {
   fetchLearnPressCourse,
+  fetchLearnPressCourses,
   fetchLearnPressLesson,
   type LearnPressCurriculumItem,
   type LearnPressCurriculumSection,
@@ -34,6 +35,20 @@ function parseUserInfo(value?: string) {
 function stripHtml(value?: string | null) {
   if (!value) return ''
   return value.replace(/<[^>]*>?/g, '').replace(/\s+/g, ' ').trim()
+}
+
+function normalise(value?: string | null) {
+  return value?.toLowerCase() ?? ''
+}
+
+function isPartOneCourse(course: LearnPressCourse) {
+  const fields = [course.slug, course.name, course.title?.rendered].map(normalise)
+  return fields.some((text) => text?.includes('part 1') || text?.includes('part i') || text?.includes('wai1') || text?.includes('purification'))
+}
+
+function isPartTwoCourse(course: LearnPressCourse) {
+  const fields = [course.slug, course.name, course.title?.rendered].map(normalise)
+  return fields.some((text) => text?.includes('part 2') || text?.includes('part ii') || text?.includes('wai2') || text?.includes('blossoming'))
 }
 
 type NormalizedLesson = {
@@ -195,6 +210,28 @@ export default async function CourseDetailPage({
   const requestedLessonId = searchParams?.lesson ? Number(searchParams.lesson) : undefined
   const activeLesson =
     (requestedLessonId && flatLessons.find((lesson) => lesson.id === requestedLessonId)) || flatLessons[0]
+  const isPartOne = isPartOneCourse(course)
+
+  let completionCta: { href: string; label: string; title?: string; description?: string } | undefined
+  if (isPartOne) {
+    let partTwoCourse: LearnPressCourse | undefined
+    try {
+      const learnedCourses = await fetchLearnPressCourses({ perPage: 50, learned: true, authToken })
+      partTwoCourse = learnedCourses.find((item) => isPartTwoCourse(item))
+    } catch {
+      partTwoCourse = undefined
+    }
+
+    const partTwoHref = partTwoCourse ? `/my-courses/${partTwoCourse.id}` : '/checkout?product=wai2'
+    completionCta = {
+      href: partTwoHref,
+      label: partTwoCourse ? 'Proceed to Part II' : 'Unlock Part II',
+      title: 'Part I completed',
+      description: partTwoCourse
+        ? 'Continue your journey with Part II — Blossoming.'
+        : 'You can unlock Part II when you are ready.',
+    }
+  }
 
   let lesson: LearnPressLesson | null = null
   let lessonError: string | null = null
@@ -250,6 +287,7 @@ export default async function CourseDetailPage({
         activeLessonTitle={activeLessonTitle}
         disableCompletion={Boolean(lessonError)}
         serverCompletedIds={serverCompletedIds}
+        completionCta={completionCta}
       >
         {activeLesson ? (
           <>
