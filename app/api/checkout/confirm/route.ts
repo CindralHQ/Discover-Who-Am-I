@@ -54,7 +54,8 @@ export async function POST(request: Request) {
         Authorization: `Basic ${Buffer.from(`${wooEnv.consumerKey}:${wooEnv.consumerSecret}`).toString('base64')}`
       },
       body: JSON.stringify({
-        status: 'processing',
+        status: 'completed',
+        set_paid: true,
         transaction_id: razorpayPaymentId
       })
     })

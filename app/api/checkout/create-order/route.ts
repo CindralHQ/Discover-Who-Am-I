@@ -1,4 +1,7 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+
+import { LEARNPRESS_USER_COOKIE, parseLearnPressUserCookie } from '@/lib/learnpress'
 
 type OrderItem = { productId: number; quantity?: number }
 
@@ -28,7 +31,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: (error as Error).message }, { status: 500 })
   }
 
-  const payload = {
+  // Attach the signed-in LearnPress user to the WooCommerce order so course access can sync back.
+  const cookieStore = cookies()
+  const userInfo = parseLearnPressUserCookie(cookieStore.get(LEARNPRESS_USER_COOKIE)?.value)
+  const userId = userInfo?.id ? Number(userInfo.id) : undefined
+  const hasCustomerId = Number.isFinite(userId)
+
+  const payload: {
+    payment_method: string
+    payment_method_title: string
+    set_paid: boolean
+    billing: typeof billing
+    line_items: { product_id: number; quantity: number }[]
+    customer_id?: number
+  } = {
     payment_method: 'razorpay',
     payment_method_title: 'Razorpay',
     set_paid: false,
@@ -37,6 +53,10 @@ export async function POST(request: Request) {
       product_id: item.productId,
       quantity: item.quantity ?? 1
     }))
+  }
+
+  if (hasCustomerId) {
+    payload.customer_id = Number(userId)
   }
 
   try {
