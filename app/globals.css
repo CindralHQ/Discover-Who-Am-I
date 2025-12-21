@@ -4,7 +4,7 @@
 
 :root {
   color-scheme: light;
-  font-size: max(22px, calc(1.1vw + 2px));
+  font-size: max(18px, calc(1vw + 1px));
 }
 body { @apply bg-white text-slate-900 antialiased overflow-x-hidden; }
 .container { @apply max-w-6xl mx-auto; }

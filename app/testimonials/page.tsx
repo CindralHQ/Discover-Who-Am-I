@@ -94,6 +94,23 @@ export default async function Testimonials() {
   const headingClass = palette.card.title
   const videoTestimonials: DriveVideoTestimonial[] = await fetchVideoTestimonials()
   const remoteTestimonials = await fetchTestimonials()
+  const prioritizedVideoTitles = [
+    'rohit arya talks about kundalini master santosh sachdeva',
+    'the secret to the meaning of life delivered'
+  ]
+  const normalizeTitle = (title?: string) => title?.toLowerCase().replace(/\s+/g, ' ').trim() ?? ''
+  const prioritizedTitleLookup = new Map(
+    prioritizedVideoTitles.map((title, index) => [normalizeTitle(title), index])
+  )
+  const prioritizedVideoTestimonials = videoTestimonials
+    .map((video, index) => ({
+      video,
+      rank:
+        prioritizedTitleLookup.get(normalizeTitle(video.title)) ??
+        prioritizedVideoTitles.length + index
+    }))
+    .sort((a, b) => a.rank - b.rank)
+    .map(({ video }) => video)
   const testimonials: SheetTestimonial[] =
     remoteTestimonials.length > 0 ? remoteTestimonials : FALLBACK_TESTIMONIALS
   const usingFallback = remoteTestimonials.length === 0
@@ -185,7 +202,7 @@ export default async function Testimonials() {
 
 
 
-    {videoTestimonials.length > 0 ? (
+    {prioritizedVideoTestimonials.length > 0 ? (
         <section className="space-y-5 mt-5">
           <header className="space-y-2">
             <h2 className={`text-3xl font-semibold tracking-tight ${headingClass}`}>
@@ -197,7 +214,7 @@ export default async function Testimonials() {
           </header>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {videoTestimonials.map((video) => (
+            {prioritizedVideoTestimonials.map((video) => (
               <Card
                 key={video.id}
                 theme={TESTIMONIALS_THEME}

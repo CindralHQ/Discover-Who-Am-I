@@ -41,6 +41,15 @@ function normalizeStoreUrl(rawUrl: string) {
   return rawUrl.replace(/\/+$/, '')
 }
 
+function getPublicSiteUrl() {
+  const siteUrl =
+    process.env.NEXT_PUBLIC_CHECKOUT_RETURN_URL?.trim() ||
+    process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined)
+
+  return siteUrl ? normalizeStoreUrl(siteUrl) : null
+}
+
 export function getWooEnvConfig(): WooCommerceEnvConfig {
   const storeUrl = process.env.WC_STORE_URL?.trim()
   const consumerKey = process.env.WC_CONSUMER_KEY?.trim()
@@ -110,11 +119,15 @@ export async function fetchWooProducts(options: FetchWooProductsOptions = {}): P
 
 export function buildWooCheckoutUrl(
   productId: number,
-  options: { quantity?: number; redirectToCheckout?: boolean } = {}
+  options: { quantity?: number; redirectToCheckout?: boolean; thankYouUrl?: string | null } = {}
 ) {
   const {
     quantity = 1,
     redirectToCheckout = true,
+    thankYouUrl = (() => {
+      const publicSiteUrl = getPublicSiteUrl()
+      return publicSiteUrl ? `${publicSiteUrl}/thank-you` : null
+    })(),
   } = options
 
   const baseStoreUrl =
@@ -128,6 +141,9 @@ export function buildWooCheckoutUrl(
   url.searchParams.set('quantity', quantity.toString())
   if (redirectToCheckout) {
     url.searchParams.set('redirect_to_checkout', 'true')
+  }
+  if (thankYouUrl) {
+    url.searchParams.set('thank_you_url', thankYouUrl)
   }
 
   return url.toString()
