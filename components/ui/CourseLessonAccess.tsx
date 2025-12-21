@@ -54,6 +54,8 @@ export function CourseLessonAccess({
   const [mounted, setMounted] = useState(false)
   const [completionError, setCompletionError] = useState<string | null>(null)
   const [completingId, setCompletingId] = useState<number | null>(null)
+  const [courseCompletionError, setCourseCompletionError] = useState<string | null>(null)
+  const [courseCompletionAttempted, setCourseCompletionAttempted] = useState(false)
 
   const storageKey = `${STORAGE_PREFIX}${courseId}`
 
@@ -170,6 +172,33 @@ export function CourseLessonAccess({
     totalLessons > 0 ? `${completedCount}/${totalLessons} lessons marked complete` : ''
   const isCourseComplete = totalLessons > 0 && completedCount >= totalLessons
 
+  useEffect(() => {
+    if (!mounted) return
+    if (!isCourseComplete) return
+    if (courseCompletionAttempted) return
+
+    const completeCourse = async () => {
+      setCourseCompletionAttempted(true)
+      setCourseCompletionError(null)
+      try {
+        const response = await fetch('/api/learnpress/course-complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ courseId }),
+        })
+        const data = await response.json().catch(() => ({}))
+        if (!response.ok) {
+          const message = typeof data?.error === 'string' ? data.error : 'Unable to mark this course complete.'
+          throw new Error(message)
+        }
+      } catch (error) {
+        setCourseCompletionError(error instanceof Error ? error.message : 'Unable to mark this course complete.')
+      }
+    }
+
+    void completeCourse()
+  }, [courseId, courseCompletionAttempted, isCourseComplete, mounted])
+
   return (
     <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
       <aside className="space-y-6 rounded-3xl border border-sky-100 bg-white/95 p-6 shadow-sm">
@@ -279,6 +308,11 @@ export function CourseLessonAccess({
         {completionError ? (
           <div className="rounded-2xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700">
             {completionError}
+          </div>
+        ) : null}
+        {courseCompletionError ? (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-sm text-amber-800">
+            {courseCompletionError}
           </div>
         ) : null}
       </main>
