@@ -18,17 +18,17 @@ type Billing = {
 
 type SearchParams = { [key: string]: string | string[] | undefined }
 
-const PRODUCTS: Record<
-  string,
-  {
-    id: number
-    name: string
-    description: string
-    badge: string
-    color: string
-    ownedHints: string[]
-  }
-> = {
+type ProductInfo = {
+  id: number
+  name: string
+  description: string
+  badge: string
+  color: string
+  ownedHints: string[]
+}
+type ProductKey = 'wai1' | 'wai2' | 'wai3' | 'wai4'
+
+const PRODUCTS: Record<ProductKey, ProductInfo> = {
   wai1: {
     id: 2462,
     name: 'WAI Part I — Purification',
@@ -63,7 +63,7 @@ const PRODUCTS: Record<
   }
 }
 
-const FALLBACK_PRODUCT = 'wai1'
+const FALLBACK_PRODUCT: ProductKey = 'wai1'
 
 declare global {
   interface Window {
@@ -86,13 +86,14 @@ async function loadRazorpayScript() {
 export function CheckoutClient({ searchParams, isLoggedIn }: { searchParams: SearchParams; isLoggedIn: boolean }) {
   const router = useRouter()
   const productParam = (searchParams?.product as string) ?? FALLBACK_PRODUCT
+  const productKey: ProductKey = (productParam in PRODUCTS ? productParam : FALLBACK_PRODUCT) as ProductKey
   const bundle = searchParams?.bundle === 'true'
 
-  const baseProducts = useMemo(() => {
-    if (bundle) return Object.entries(PRODUCTS)
-    const product = PRODUCTS[productParam] ?? PRODUCTS[FALLBACK_PRODUCT]
-    return [[productParam, product]]
-  }, [bundle, productParam])
+  const baseProducts = useMemo<[ProductKey, ProductInfo][]>(() => {
+    if (bundle) return Object.entries(PRODUCTS) as [ProductKey, ProductInfo][]
+    const product = PRODUCTS[productKey] ?? PRODUCTS[FALLBACK_PRODUCT]
+    return [[productKey, product]]
+  }, [bundle, productKey])
 
   const [billing, setBilling] = useState<Billing>({
     first_name: '',
@@ -306,7 +307,7 @@ export function CheckoutClient({ searchParams, isLoggedIn }: { searchParams: Sea
   }, [baseProducts, bundle, owned])
 
   const selectedProducts = useMemo(() => selectedEntries.map(([, product]) => product), [selectedEntries])
-  const singleTargetKey = selectedEntries[0]?.[0] ?? productParam ?? FALLBACK_PRODUCT
+  const singleTargetKey = selectedEntries[0]?.[0] ?? productKey ?? FALLBACK_PRODUCT
 
   const filteredOutCount = bundle ? baseProducts.length - selectedProducts.length : 0
   const hasItemsToPurchase = selectedProducts.length > 0
