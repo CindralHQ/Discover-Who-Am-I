@@ -121,7 +121,7 @@ export default function CourseLoginPage() {
             </button>
           </form>
           <div className="flex items-center justify-between text-sm text-sky-600">
-            <Link href={FORGOT_PASSWORD_URL} target="_blank" rel="noreferrer" className="font-semibold underline">
+            <Link href="/forgot-password" className="font-semibold underline">
               Forgot password?
             </Link>
             <Link href="/contact" className="font-semibold underline">

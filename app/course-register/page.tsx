@@ -13,6 +13,8 @@ export default function CourseRegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
@@ -91,35 +93,55 @@ export default function CourseRegisterPage() {
             <label htmlFor="password" className="text-sm font-semibold text-sky-900">
               Password
             </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="new-password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="w-full rounded-2xl border border-sky-200 bg-white px-4 py-3 text-base text-sky-900 shadow-sm transition placeholder:text-sky-300 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
-              placeholder="Choose a secure password"
-              required
-              minLength={6}
-            />
+            <div className="relative">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="new-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                className="w-full rounded-2xl border border-sky-200 bg-white px-4 py-3 pr-24 text-base text-sky-900 shadow-sm transition placeholder:text-sky-300 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                placeholder="Choose a secure password"
+                required
+                minLength={6}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-xl border border-sky-100 px-3 py-1 text-xs font-semibold text-sky-700 transition hover:border-sky-200 hover:bg-sky-50"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
           </div>
           <div className="space-y-2">
             <label htmlFor="confirmPassword" className="text-sm font-semibold text-sky-900">
               Confirm password
             </label>
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              autoComplete="new-password"
-              value={confirmPassword}
-              onChange={(event) => setConfirmPassword(event.target.value)}
-              className="w-full rounded-2xl border border-sky-200 bg-white px-4 py-3 text-base text-sky-900 shadow-sm transition placeholder:text-sky-300 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
-              placeholder="Re-enter password"
-              required
-              minLength={6}
-            />
+            <div className="relative">
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showConfirmPassword ? 'text' : 'password'}
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                className="w-full rounded-2xl border border-sky-200 bg-white px-4 py-3 pr-24 text-base text-sky-900 shadow-sm transition placeholder:text-sky-300 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                placeholder="Re-enter password"
+                required
+                minLength={6}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-xl border border-sky-100 px-3 py-1 text-xs font-semibold text-sky-700 transition hover:border-sky-200 hover:bg-sky-50"
+                aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+              >
+                {showConfirmPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
           </div>
 
           {error ? (
