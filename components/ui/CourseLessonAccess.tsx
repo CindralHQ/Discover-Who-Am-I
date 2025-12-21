@@ -27,7 +27,7 @@ type CourseLessonAccessProps = {
   serverCompletedIds?: number[]
 }
 
-const STORAGE_PREFIX = 'lp_progress_'
+const STORAGE_PREFIX = 'lp_progress_v2_'
 
 export function CourseLessonAccess({
   courseId,
@@ -45,6 +45,8 @@ export function CourseLessonAccess({
   )
   const [completedIds, setCompletedIds] = useState<number[]>(() => Array.from(new Set(serverCompletedIds)))
   const [mounted, setMounted] = useState(false)
+  const [completionError, setCompletionError] = useState<string | null>(null)
+  const [completingId, setCompletingId] = useState<number | null>(null)
 
   const storageKey = `${STORAGE_PREFIX}${courseId}`
 
@@ -84,10 +86,30 @@ export function CourseLessonAccess({
     }
   }
 
-  function markCompleted(id?: number) {
+  async function markCompleted(id?: number) {
     if (!id) return
     if (completedIds.includes(id)) return
-    persist([...completedIds, id])
+    if (completingId) return
+    setCompletionError(null)
+    setCompletingId(id)
+    try {
+      const response = await fetch('/api/learnpress/lesson-complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lessonId: id }),
+      })
+      const data = await response.json().catch(() => ({}))
+      if (!response.ok) {
+        const message = typeof data?.error === 'string' ? data.error : 'Unable to mark this lesson complete.'
+        throw new Error(message)
+      }
+      persist([...completedIds, id])
+      router.refresh()
+    } catch (error) {
+      setCompletionError(error instanceof Error ? error.message : 'Unable to mark this lesson complete.')
+    } finally {
+      setCompletingId(null)
+    }
   }
 
   const indexById = useMemo(() => {
@@ -219,11 +241,20 @@ export function CourseLessonAccess({
             <button
               type="button"
               onClick={() => markCompleted(activeLessonId)}
-              disabled={completedIds.includes(activeLessonId)}
+              disabled={completedIds.includes(activeLessonId) || completingId === activeLessonId}
               className="rounded-full bg-sky-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:bg-sky-300"
             >
-              {completedIds.includes(activeLessonId) ? 'Completed' : 'Mark completed'}
+              {completedIds.includes(activeLessonId)
+                ? 'Completed'
+                : completingId === activeLessonId
+                  ? 'Saving…'
+                  : 'Mark completed'}
             </button>
+          </div>
+        ) : null}
+        {completionError ? (
+          <div className="rounded-2xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700">
+            {completionError}
           </div>
         ) : null}
       </main>
