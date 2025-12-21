@@ -8,6 +8,7 @@ type Lesson = {
   id: number
   title: string
   type: string
+  completed?: boolean
 }
 
 type Section = {
@@ -23,6 +24,7 @@ type CourseLessonAccessProps = {
   activeLessonTitle?: string
   children: React.ReactNode
   disableCompletion?: boolean
+  serverCompletedIds?: number[]
 }
 
 const STORAGE_PREFIX = 'lp_progress_'
@@ -33,14 +35,15 @@ export function CourseLessonAccess({
   activeLessonId,
   activeLessonTitle,
   children,
-  disableCompletion = false
+  disableCompletion = false,
+  serverCompletedIds = []
 }: CourseLessonAccessProps) {
   const router = useRouter()
   const flatLessons = useMemo(
     () => sections.flatMap((section) => section.lessons),
     [sections]
   )
-  const [completedIds, setCompletedIds] = useState<number[]>([])
+  const [completedIds, setCompletedIds] = useState<number[]>(() => Array.from(new Set(serverCompletedIds)))
   const [mounted, setMounted] = useState(false)
 
   const storageKey = `${STORAGE_PREFIX}${courseId}`
@@ -51,7 +54,8 @@ export function CourseLessonAccess({
       if (raw) {
         const parsed = JSON.parse(raw)
         if (Array.isArray(parsed)) {
-          setCompletedIds(parsed.filter((id) => Number.isFinite(id)))
+          const merged = [...serverCompletedIds, ...parsed.filter((id) => Number.isFinite(id))]
+          setCompletedIds(Array.from(new Set(merged)))
         }
       }
     } catch {
@@ -59,13 +63,21 @@ export function CourseLessonAccess({
     } finally {
       setMounted(true)
     }
-  }, [storageKey])
+  }, [storageKey, serverCompletedIds])
+
+  useEffect(() => {
+    // Keep localStorage in sync when server progress updates (e.g., switching devices).
+    if (!mounted) return
+    persist([...completedIds, ...serverCompletedIds])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [serverCompletedIds, mounted])
 
   function persist(next: number[]) {
-    setCompletedIds(next)
+    const unique = Array.from(new Set(next))
+    setCompletedIds(unique)
     if (typeof window !== 'undefined') {
       try {
-        window.localStorage.setItem(storageKey, JSON.stringify(next))
+        window.localStorage.setItem(storageKey, JSON.stringify(unique))
       } catch {
         // ignore
       }

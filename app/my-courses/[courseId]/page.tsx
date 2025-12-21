@@ -40,6 +40,7 @@ type NormalizedLesson = {
   id: number
   title: string
   type: string
+  completed?: boolean
 }
 
 type NormalizedSection = {
@@ -100,6 +101,19 @@ function normalizeItems(items: LearnPressCurriculumItem[]): NormalizedLesson[] {
       if (!Number.isFinite(id)) {
         return null
       }
+      const rawStatus =
+        (item as any).status ??
+        (item as any).item_status ??
+        (item as any).user_status ??
+        (item as any).itemStatus
+      const normalizedStatus = typeof rawStatus === 'string' ? rawStatus.toLowerCase() : ''
+      const isCompleted =
+        Boolean((item as any).completed) ||
+        Boolean((item as any).is_completed) ||
+        normalizedStatus === 'completed' ||
+        normalizedStatus === 'finished' ||
+        normalizedStatus === 'passed'
+
       const title =
         (item as any).title?.rendered ??
         item.title ??
@@ -107,7 +121,7 @@ function normalizeItems(items: LearnPressCurriculumItem[]): NormalizedLesson[] {
         (item as any).item_title ??
         `Lesson ${index + 1}`
       const type = String(item.type ?? item.item_type ?? (item as any).post_type ?? 'lesson').toLowerCase()
-      return { id, title, type }
+      return { id, title, type, completed: isCompleted }
     })
     .filter(Boolean) as NormalizedLesson[]
 }
@@ -177,6 +191,7 @@ export default async function CourseDetailPage({
   const title = course.title?.rendered ?? course.name ?? `Course #${course.id}`
   const sections = extractSections(course)
   const flatLessons = sections.flatMap((section) => section.lessons)
+  const serverCompletedIds = flatLessons.filter((lesson) => lesson.completed).map((lesson) => lesson.id)
   const requestedLessonId = searchParams?.lesson ? Number(searchParams.lesson) : undefined
   const activeLesson =
     (requestedLessonId && flatLessons.find((lesson) => lesson.id === requestedLessonId)) || flatLessons[0]
@@ -234,6 +249,7 @@ export default async function CourseDetailPage({
         activeLessonId={activeLesson?.id}
         activeLessonTitle={activeLessonTitle}
         disableCompletion={Boolean(lessonError)}
+        serverCompletedIds={serverCompletedIds}
       >
         {activeLesson ? (
           <>
