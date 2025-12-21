@@ -166,7 +166,7 @@ export function CheckoutClient({ searchParams, isLoggedIn }: { searchParams: Sea
         throw new Error('Unable to load Razorpay.')
       }
 
-      const key = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID
+      const key = razorpayKey || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID
       if (!key) {
         throw new Error('Missing Razorpay key.')
       }
@@ -226,6 +226,7 @@ export function CheckoutClient({ searchParams, isLoggedIn }: { searchParams: Sea
   const [pricing, setPricing] = useState<Record<number, string>>({})
   const [owned, setOwned] = useState<string[]>([])
   const [ownedLoaded, setOwnedLoaded] = useState(false)
+  const [razorpayKey, setRazorpayKey] = useState<string | null>(null)
 
   const normalizeToken = (value?: string | null) => {
     if (!value) return ''
@@ -276,6 +277,21 @@ export function CheckoutClient({ searchParams, isLoggedIn }: { searchParams: Sea
       }
     }
     fetchOwned()
+  }, [])
+
+  useEffect(() => {
+    const fetchKey = async () => {
+      try {
+        const res = await fetch('/api/checkout/config')
+        const data = await res.json()
+        if (res.ok && data.key) {
+          setRazorpayKey(data.key as string)
+        }
+      } catch {
+        // ignore; fallback to env below
+      }
+    }
+    fetchKey()
   }, [])
 
   const ownedMatchesKey = (key: string) => {

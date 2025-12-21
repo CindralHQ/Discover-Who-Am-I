@@ -101,8 +101,9 @@ export default function ThankYouPage({ searchParams = {} }: ThankYouPageProps) {
         <div className="space-y-4 rounded-3xl border border-sky-100 bg-white/95 p-7 shadow-sm">
           <h3 className={`text-xl font-semibold tracking-tight ${headingClass}`}>Need help?</h3>
           <p className="text-base leading-7 text-sky-800">
-            If you were sent back to the WordPress checkout page, use the button above to return here. Your access is
-            linked to the same email used at checkout. Still stuck? Reach out and we will align your access manually.
+            Stay on this site—your order is already linked to the email used at checkout. If you don&apos;t see your
+            course after signing in, refresh My Courses, or set your password via Course Login. Still stuck? Reach out
+            and we will align your access manually.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link
@@ -111,14 +112,12 @@ export default function ThankYouPage({ searchParams = {} }: ThankYouPageProps) {
             >
               Contact support
             </Link>
-            <a
-              href="https://wordpress.discoverwhoami.com/my-account/orders/"
+            <Link
+              href="/my-courses"
               className="inline-flex items-center justify-center rounded-2xl border border-sky-200 px-4 py-2 text-sm font-semibold text-sky-900 transition hover:bg-sky-50"
-              target="_blank"
-              rel="noreferrer"
             >
-              View WordPress order ↗
-            </a>
+              Open My Courses
+            </Link>
           </div>
         </div>
       </section>
