@@ -295,7 +295,7 @@ export function CheckoutClient({ searchParams, isLoggedIn }: { searchParams: Sea
     fetchKey()
   }, [])
 
-  const ownedMatchesKey = (key: string) => {
+  const ownedMatchesKey = (key: ProductKey) => {
     const productHints = PRODUCTS[key]?.ownedHints ?? [key]
     const normalizedHints = productHints.map((hint) => normalizeToken(hint)).filter(Boolean)
     if (normalizedHints.length === 0) return false
