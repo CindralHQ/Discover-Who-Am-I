@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 
 const FONT_SCALE_MIN = 0.9
-const FONT_SCALE_MAX = 1.25
+const FONT_SCALE_MAX = 1.15
 const FONT_SCALE_STEP = 0.1
 const FONT_SCALE_STORAGE_KEY = 'dwai-font-scale'
 

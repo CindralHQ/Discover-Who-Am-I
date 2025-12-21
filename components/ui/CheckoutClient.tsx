@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -107,6 +108,19 @@ export function CheckoutClient({ searchParams, isLoggedIn }: { searchParams: Sea
     postcode: '',
     country: 'IN'
   })
+  const [extra, setExtra] = useState({
+    sex: '',
+    dob: '',
+    breathingCourse: '',
+    spiritualPractice: '',
+    healthIssues: '',
+    referralNotes: ''
+  })
+  const [agreements, setAgreements] = useState({
+    confirmRead: false,
+    terms: false,
+    disclaimer: false
+  })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -121,13 +135,44 @@ export function CheckoutClient({ searchParams, isLoggedIn }: { searchParams: Sea
     setBilling((prev) => ({ ...prev, [field]: event.target.value }))
   }
 
+  const handleExtraChange =
+    (field: keyof typeof extra) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setExtra((prev) => ({ ...prev, [field]: event.target.value }))
+    }
+
+  const toggleAgreement = (field: keyof typeof agreements) => () => {
+    setAgreements((prev) => ({ ...prev, [field]: !prev[field] }))
+  }
+
+  const buildMetaData = () => {
+    const entries = [
+      { key: 'sex', value: extra.sex },
+      { key: 'dob', value: extra.dob },
+      { key: 'breathing_course_experience', value: extra.breathingCourse },
+      { key: 'current_spiritual_practice', value: extra.spiritualPractice },
+      { key: 'health_issues', value: extra.healthIssues },
+      { key: 'referral_background', value: extra.referralNotes },
+      { key: 'confirm_read', value: agreements.confirmRead ? 'yes' : 'no' },
+      { key: 'agree_terms', value: agreements.terms ? 'yes' : 'no' },
+      { key: 'agree_disclaimer', value: agreements.disclaimer ? 'yes' : 'no' }
+    ]
+
+    return entries.filter((entry) => entry.value !== undefined && entry.value !== null)
+  }
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     setError(null)
     setSubmitting(true)
 
-    if (!hasItemsToPurchase) {
+    if (!selectedProducts.length) {
       setError('You already own the selected courses. Nothing to purchase here.')
+      setSubmitting(false)
+      return
+    }
+
+    if (!agreements.confirmRead || !agreements.terms || !agreements.disclaimer) {
+      setError('Please confirm and accept the terms and disclaimer to continue.')
       setSubmitting(false)
       return
     }
@@ -138,7 +183,8 @@ export function CheckoutClient({ searchParams, isLoggedIn }: { searchParams: Sea
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           items: selectedProducts.map((product) => ({ productId: product.id, quantity: 1 })),
-          billing
+          billing,
+          metaData: buildMetaData()
         })
       })
       const orderPayload = await orderRes.json()
@@ -302,9 +348,7 @@ export function CheckoutClient({ searchParams, isLoggedIn }: { searchParams: Sea
     return owned.some((entry) => normalizedHints.some((hint) => entry.includes(hint)))
   }
 
-  const selectedEntries = useMemo(() => {
-    return baseProducts.filter(([key]) => !(bundle && ownedMatchesKey(key)))
-  }, [baseProducts, bundle, owned])
+  const selectedEntries = useMemo(() => baseProducts.filter(([key]) => !(bundle && ownedMatchesKey(key))), [baseProducts, bundle, owned])
 
   const selectedProducts = useMemo(() => selectedEntries.map(([, product]) => product), [selectedEntries])
   const singleTargetKey = selectedEntries[0]?.[0] ?? productKey ?? FALLBACK_PRODUCT
@@ -333,183 +377,167 @@ export function CheckoutClient({ searchParams, isLoggedIn }: { searchParams: Sea
 
   return (
     <div className="px-4 py-10">
-      <div className="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-2xl border border-sky-100 bg-white p-6 shadow-lg md:p-8">
-          <div className="space-y-1 text-center md:text-left">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-sky-400">Checkout</p>
-            <h1 className="text-2xl font-semibold text-sky-900">Complete your purchase</h1>
-            <p className="text-sm text-slate-600">{selectedLabel}</p>
+      <form className="mx-auto w-full max-w-5xl space-y-6" onSubmit={handleSubmit}>
+        <div className="grid gap-8 lg:grid-cols-2">
+          <div className="rounded-2xl border border-sky-100 bg-white p-6 shadow-lg md:p-8">
+            <div className="space-y-1 text-center md:text-left">
+              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-sky-400">Checkout</p>
+              <h1 className="text-2xl font-semibold text-sky-900">Complete your purchase</h1>
+              <p className="text-sm text-slate-600">{selectedLabel}</p>
+            </div>
+
+            <div className="mt-6 space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-sky-900" htmlFor="first_name">First name</label>
+                  <input
+                    id="first_name"
+                    value={billing.first_name}
+                    onChange={handleChange('first_name')}
+                    className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-sky-900" htmlFor="last_name">Last name</label>
+                  <input
+                    id="last_name"
+                    value={billing.last_name}
+                    onChange={handleChange('last_name')}
+                    className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-sky-900" htmlFor="email">Email</label>
+                <input
+                  id="email"
+                  type="email"
+                  value={billing.email}
+                  onChange={handleChange('email')}
+                  className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-sky-900" htmlFor="phone">Phone</label>
+                <input
+                  id="phone"
+                  value={billing.phone}
+                  onChange={handleChange('phone')}
+                  className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-sky-900" htmlFor="address_1">Address</label>
+                <input
+                  id="address_1"
+                  value={billing.address_1}
+                  onChange={handleChange('address_1')}
+                  className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-sky-900" htmlFor="address_2">Address 2 (optional)</label>
+                <input
+                  id="address_2"
+                  value={billing.address_2}
+                  onChange={handleChange('address_2')}
+                  className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                />
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-sky-900" htmlFor="city">City</label>
+                  <input
+                    id="city"
+                    value={billing.city}
+                    onChange={handleChange('city')}
+                    className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-sky-900" htmlFor="state">State/Province</label>
+                  <input
+                    id="state"
+                    value={billing.state}
+                    onChange={handleChange('state')}
+                    className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-sky-900" htmlFor="postcode">Postal code</label>
+                  <input
+                    id="postcode"
+                    value={billing.postcode}
+                    onChange={handleChange('postcode')}
+                    className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-sky-900" htmlFor="country">Country code</label>
+                  <input
+                    id="country"
+                    value={billing.country}
+                    onChange={handleChange('country')}
+                    className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                    required
+                  />
+                </div>
+              </div>
+
+              {error ? (
+                <div className="rounded-2xl border border-rose-200 bg-rose-50/70 px-4 py-3 text-sm font-semibold text-rose-700">
+                  {error}
+                </div>
+              ) : null}
+            </div>
           </div>
 
-          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-sky-900" htmlFor="first_name">First name</label>
-                <input
-                  id="first_name"
-                  value={billing.first_name}
-                  onChange={handleChange('first_name')}
-                  className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-sky-900" htmlFor="last_name">Last name</label>
-                <input
-                  id="last_name"
-                  value={billing.last_name}
-                  onChange={handleChange('last_name')}
-                  className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
-                  required
-                />
-              </div>
+          <div className="space-y-4 rounded-2xl border border-sky-100 bg-slate-50 p-5 shadow-inner md:p-6">
+            <div className="space-y-1">
+              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">Your Order</p>
+              <h2 className="text-lg font-semibold text-slate-900">
+                {bundle ? 'WAI Complete Bundle' : selectedProducts[0]?.name ?? 'Course'}
+              </h2>
+              <p className="text-xs text-slate-600">
+                {bundle
+                  ? hasItemsToPurchase
+                    ? 'All parts together in one checkout.'
+                    : 'All selected courses are already in your library.'
+                  : selectedProducts[0]?.description ?? 'Selected course'}
+              </p>
             </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-sky-900" htmlFor="email">Email</label>
-              <input
-                id="email"
-                type="email"
-                value={billing.email}
-                onChange={handleChange('email')}
-                className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-sky-900" htmlFor="phone">Phone</label>
-              <input
-                id="phone"
-                value={billing.phone}
-                onChange={handleChange('phone')}
-                className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-sky-900" htmlFor="address_1">Address</label>
-              <input
-                id="address_1"
-                value={billing.address_1}
-                onChange={handleChange('address_1')}
-                className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-sky-900" htmlFor="address_2">Address 2 (optional)</label>
-              <input
-                id="address_2"
-                value={billing.address_2}
-                onChange={handleChange('address_2')}
-                className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
-              />
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-sky-900" htmlFor="city">City</label>
-                <input
-                  id="city"
-                  value={billing.city}
-                  onChange={handleChange('city')}
-                  className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-sky-900" htmlFor="state">State/Province</label>
-                <input
-                  id="state"
-                  value={billing.state}
-                  onChange={handleChange('state')}
-                  className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-sky-900" htmlFor="postcode">Postal code</label>
-                <input
-                  id="postcode"
-                  value={billing.postcode}
-                  onChange={handleChange('postcode')}
-                  className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-sky-900" htmlFor="country">Country code</label>
-                <input
-                  id="country"
-                  value={billing.country}
-                  onChange={handleChange('country')}
-                  className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
-                  required
-                />
-              </div>
-            </div>
-
-            {error ? (
-              <div className="rounded-2xl border border-rose-200 bg-rose-50/70 px-4 py-3 text-sm font-semibold text-rose-700">
-                {error}
-              </div>
-            ) : null}
-
-            <button
-              type="submit"
-              className="inline-flex w-full items-center justify-center rounded-2xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-500 disabled:opacity-70"
-              disabled={submitting || !isLoggedIn || !hasItemsToPurchase || (bundle && !ownedLoaded)}
-            >
-              {submitting
-                ? 'Processing…'
-                : !hasItemsToPurchase
-                  ? 'Nothing to purchase'
-                  : bundle && !ownedLoaded
-                    ? 'Checking your courses…'
-                    : 'Pay with Razorpay'}
-            </button>
-          </form>
-        </div>
-
-        <div className="space-y-4 rounded-2xl border border-sky-100 bg-slate-50 p-6 shadow-inner md:p-8">
-          <div className="space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">Your Order</p>
-            <h2 className="text-xl font-semibold text-slate-900">
-              {bundle ? 'WAI Complete Bundle' : selectedProducts[0]?.name ?? 'Course'}
-            </h2>
-            <p className="text-sm text-slate-600">
-              {bundle
-                ? hasItemsToPurchase
-                  ? 'All parts together in one checkout.'
-                  : 'All selected courses are already in your library.'
-                : selectedProducts[0]?.description ?? 'Selected course'}
-            </p>
-          </div>
           {bundle && !ownedLoaded ? (
             <p className="text-xs text-slate-500">Checking your existing enrollments…</p>
           ) : null}
 
-          <div
-            key={bundle ? 'bundle-list' : 'single-list'}
-            className="space-y-3 animate-page-fade transition duration-300"
-          >
+          <div className="space-y-3 animate-page-fade transition duration-300">
             {hasItemsToPurchase ? (
               selectedProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="flex items-start justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition duration-300"
+                  className="flex items-start justify-between rounded-xl border border-slate-200 bg-white px-3.5 py-3 shadow-sm transition duration-300"
                 >
                   <div className="space-y-1">
-                    <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${product.color}`}>
+                    <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold ${product.color}`}>
                       {product.badge}
                     </span>
-                    <p className="text-sm font-semibold text-slate-900">{product.name}</p>
-                    <p className="text-xs text-slate-600">{product.description}</p>
+                    <p className="text-sm font-semibold leading-tight text-slate-900">{product.name}</p>
+                    <p className="text-xs leading-snug text-slate-600">{product.description}</p>
                     <p className="text-xs font-semibold text-slate-800">
                       Price: {pricing[product.id] ?? 'Loading…'}
                     </p>
@@ -517,7 +545,7 @@ export function CheckoutClient({ searchParams, isLoggedIn }: { searchParams: Sea
                 </div>
               ))
             ) : (
-              <div className="space-y-2 rounded-2xl border border-amber-200 bg-amber-50/70 px-4 py-3 text-sm text-amber-900 shadow-sm">
+              <div className="space-y-2 rounded-xl border border-amber-200 bg-amber-50/70 px-4 py-3 text-sm text-amber-900 shadow-sm">
                 <p className="font-semibold">You already own every course in this bundle.</p>
                 <p className="text-xs text-amber-800">
                   Nothing to add here—head to My Courses to keep learning.
@@ -539,7 +567,7 @@ export function CheckoutClient({ searchParams, isLoggedIn }: { searchParams: Sea
             </div>
           ) : null}
 
-          <div className="flex items-center justify-between rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-sm">
+          <div className="flex items-center justify-between rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm">
             <span>Total</span>
             <span>
               {currency} {totalAmount.toLocaleString('en-IN')}
@@ -551,7 +579,7 @@ export function CheckoutClient({ searchParams, isLoggedIn }: { searchParams: Sea
               key="bundle-switch"
               type="button"
               onClick={() => router.replace(`/checkout?product=${encodeURIComponent(singleTargetKey)}`)}
-              className="w-full rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-3 text-left text-sm text-slate-700 shadow-sm transition duration-200 hover:scale-[1.01] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400 animate-page-fade"
+              className="w-full rounded-xl border border-dashed border-slate-300 bg-white px-4 py-3 text-left text-sm text-slate-700 shadow-sm transition duration-200 hover:scale-[1.01] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400 animate-page-fade"
             >
               <p className="font-semibold text-slate-900">Switch to single course</p>
               <p className="text-xs text-slate-600">Prefer one course only?</p>
@@ -564,7 +592,7 @@ export function CheckoutClient({ searchParams, isLoggedIn }: { searchParams: Sea
               key="single-switch"
               type="button"
               onClick={() => router.replace('/checkout?bundle=true')}
-              className="w-full rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-3 text-left text-sm text-slate-700 shadow-sm transition duration-200 hover:scale-[1.01] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400 animate-page-fade"
+              className="w-full rounded-xl border border-dashed border-slate-300 bg-white px-4 py-3 text-left text-sm text-slate-700 shadow-sm transition duration-200 hover:scale-[1.01] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400 animate-page-fade"
             >
               <p className="font-semibold text-slate-900">Bundle option</p>
               <p className="text-xs text-slate-600">
@@ -575,8 +603,167 @@ export function CheckoutClient({ searchParams, isLoggedIn }: { searchParams: Sea
               </div>
             </button>
           )}
+
+            <button
+              type="submit"
+              className="inline-flex w-full items-center justify-center rounded-2xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-500 disabled:bg-slate-200 disabled:text-slate-500 disabled:shadow-none disabled:opacity-100"
+              disabled={
+                submitting ||
+                !isLoggedIn ||
+                !hasItemsToPurchase ||
+                (bundle && !ownedLoaded) ||
+                !agreements.confirmRead ||
+                !agreements.terms ||
+                !agreements.disclaimer
+              }
+            >
+              {submitting
+                ? 'Processing…'
+                : !hasItemsToPurchase
+                  ? 'Nothing to purchase'
+                  : bundle && !ownedLoaded
+                    ? 'Checking your courses…'
+                    : 'Continue with payment'}
+            </button>
+
+            <div className="space-y-3 rounded-xl border border-sky-100 bg-sky-50/60 px-3 py-3 text-sm text-sky-800">
+              <label className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={agreements.confirmRead}
+                  onChange={toggleAgreement('confirmRead')}
+                  className="mt-1 h-4 w-4 rounded border-sky-300 text-sky-600 focus:ring-sky-400"
+                  required
+                />
+                <span>Please confirm you have read.</span>
+              </label>
+              <p className="text-xs text-sky-600">
+                Your personal data will be used to process your order, support your experience throughout this website,
+                and for other purposes described in our privacy policy.
+              </p>
+              <label className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={agreements.terms}
+                  onChange={toggleAgreement('terms')}
+                  className="mt-1 h-4 w-4 rounded border-sky-300 text-sky-600 focus:ring-sky-400"
+                  required
+                />
+                <span>
+                  I have read and agree to the website{' '}
+                  <Link href="/legal/terms" className="text-sky-700 underline">terms and conditions</Link>*
+                </span>
+              </label>
+              <label className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={agreements.disclaimer}
+                  onChange={toggleAgreement('disclaimer')}
+                  className="mt-1 h-4 w-4 rounded border-sky-300 text-sky-600 focus:ring-sky-400"
+                  required
+                />
+                <span>
+                  I have read and agree to the website{' '}
+                  <Link href="/legal/disclaimer" className="text-sky-700 underline">disclaimer</Link>*
+                </span>
+              </label>
+            </div>
+
+            {error ? (
+              <div className="rounded-2xl border border-rose-200 bg-rose-50/70 px-4 py-3 text-sm font-semibold text-rose-700">
+                {error}
+              </div>
+            ) : null}
+          </div>
         </div>
-      </div>
+
+        <div className="w-full rounded-2xl border border-sky-100 bg-white p-6 shadow-lg md:p-8">
+          <div className="space-y-1 text-center md:text-left">
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-sky-400">Additional details</p>
+          </div>
+          <div className="mt-6 space-y-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-sky-900" htmlFor="sex">Sex</label>
+                <input
+                  id="sex"
+                  value={extra.sex}
+                  onChange={handleExtraChange('sex')}
+                  className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                  placeholder="Male / Female / Other"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-sky-900" htmlFor="dob">D.O.B</label>
+                <input
+                  id="dob"
+                  type="date"
+                  value={extra.dob}
+                  onChange={handleExtraChange('dob')}
+                  className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                  placeholder="dd/mm/yyyy"
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-sky-900" htmlFor="breathingCourse">
+                  Have you done any course in breathing exercises/healing/Reiki/etc.?
+                </label>
+                <textarea
+                  id="breathingCourse"
+                  value={extra.breathingCourse}
+                  onChange={handleExtraChange('breathingCourse')}
+                  rows={2}
+                  className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-sky-900" htmlFor="spiritualPractice">
+                  Are you following any spiritual practice currently? Please specify:
+                </label>
+                <textarea
+                  id="spiritualPractice"
+                  value={extra.spiritualPractice}
+                  onChange={handleExtraChange('spiritualPractice')}
+                  rows={2}
+                  className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-sky-900" htmlFor="healthIssues">
+                  Health Issues if any?
+                </label>
+                <textarea
+                  id="healthIssues"
+                  value={extra.healthIssues}
+                  onChange={handleExtraChange('healthIssues')}
+                  rows={2}
+                  className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-sky-900" htmlFor="referralNotes">
+                  Please share how you heard about the Course and any background information you would like to share?
+                </label>
+                <textarea
+                  id="referralNotes"
+                  value={extra.referralNotes}
+                  onChange={handleExtraChange('referralNotes')}
+                  rows={2}
+                  className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm text-sky-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+    </form>
     </div>
   )
 }

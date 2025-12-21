@@ -4,6 +4,7 @@ import { cookies } from 'next/headers'
 import { LEARNPRESS_USER_COOKIE, parseLearnPressUserCookie } from '@/lib/learnpress'
 
 type OrderItem = { productId: number; quantity?: number }
+type OrderMeta = { key?: string; value?: string }
 
 function getWooEnv() {
   const storeUrl = process.env.WC_STORE_URL?.replace(/\/+$/, '')
@@ -19,6 +20,7 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null)
   const items = Array.isArray(body?.items) ? (body.items as OrderItem[]) : []
   const billing = body?.billing
+  const metaDataRaw = Array.isArray(body?.metaData) ? (body.metaData as OrderMeta[]) : []
 
   if (items.length === 0) {
     return NextResponse.json({ error: 'No products specified.' }, { status: 400 })
@@ -44,6 +46,7 @@ export async function POST(request: Request) {
     billing: typeof billing
     line_items: { product_id: number; quantity: number }[]
     customer_id?: number
+    meta_data?: { key: string; value: string }[]
   } = {
     payment_method: 'razorpay',
     payment_method_title: 'Razorpay',
@@ -57,6 +60,17 @@ export async function POST(request: Request) {
 
   if (hasCustomerId) {
     payload.customer_id = Number(userId)
+  }
+
+  const cleanedMeta = metaDataRaw
+    .map((entry) => ({
+      key: typeof entry.key === 'string' ? entry.key.trim() : '',
+      value: entry.value == null ? '' : String(entry.value),
+    }))
+    .filter((entry) => entry.key && entry.value)
+
+  if (cleanedMeta.length > 0) {
+    payload.meta_data = cleanedMeta
   }
 
   try {
