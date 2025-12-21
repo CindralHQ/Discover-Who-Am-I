@@ -25,6 +25,8 @@ const THEME: ThemeName = 'sahasrara'
 const WAI_FOUR_PRODUCT_ID = 2466
 const ENROLL_URL = buildWooCheckoutUrl(WAI_FOUR_PRODUCT_ID)
 
+export const dynamic = 'force-dynamic'
+
 type VisualAsset = { src: StaticImageData; alt: string }
 
 const seriesOverview: Array<{
@@ -120,7 +122,13 @@ export default async function WaiFourPage() {
         authToken
       )
     : false
-  const primaryCtaHref = hasCourseAccess ? '/my-courses' : ENROLL_URL
+  const nextCheckout = `/checkout?product=wai4`
+  const primaryCtaHref =
+    hasCourseAccess || hasPartThreeAccess
+      ? hasCourseAccess
+        ? '/my-courses'
+        : nextCheckout
+      : '/wai3'
   const primaryCtaLabel = hasCourseAccess
     ? 'Continue Learning'
     : hasPartThreeAccess
@@ -346,11 +354,13 @@ export default async function WaiFourPage() {
           </>
         }
         buttonHref={
-          hasCourseAccess || hasPartThreeAccess
-            ? authToken
-              ? primaryCtaHref
-              : `/course-register?next=${encodeURIComponent(primaryCtaHref)}`
-            : undefined
+          hasCourseAccess
+            ? '/my-courses'
+            : hasPartThreeAccess
+              ? authToken
+                ? nextCheckout
+                : `/course-register?next=${encodeURIComponent(nextCheckout)}`
+              : '/wai3'
         }
         buttonLabel={primaryCtaLabel}
         helperText={

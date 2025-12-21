@@ -127,7 +127,15 @@ export default async function WaiThreePage() {
         authToken
       )
     : false
-  const primaryCtaHref = hasCourseAccess ? '/my-courses' : ENROLL_URL
+  const nextCheckout = `/checkout?product=wai3`
+  const primaryCtaHref =
+    hasCourseAccess || hasPartTwoAccess
+      ? hasCourseAccess
+        ? '/my-courses'
+        : authToken
+          ? nextCheckout
+          : `/course-register?next=${encodeURIComponent(nextCheckout)}`
+      : '/wai2'
   const primaryCtaLabel = hasCourseAccess
     ? 'Continue Learning'
     : hasPartTwoAccess
@@ -347,11 +355,13 @@ export default async function WaiThreePage() {
           </>
         }
         buttonHref={
-          hasCourseAccess || hasPartTwoAccess
-            ? authToken
-              ? primaryCtaHref
-              : `/course-register?next=${encodeURIComponent(primaryCtaHref)}`
-            : undefined
+          hasCourseAccess
+            ? '/my-courses'
+            : hasPartTwoAccess
+              ? authToken
+                ? nextCheckout
+                : `/course-register?next=${encodeURIComponent(nextCheckout)}`
+              : '/wai2'
         }
         buttonLabel={primaryCtaLabel}
         helperText={

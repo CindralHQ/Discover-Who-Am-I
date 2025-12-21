@@ -110,12 +110,13 @@ export default async function WaiTwoPage() {
   const hasPartOneAccess = authToken
     ? await userHasCourseAccess(['wai part 1', 'who am i - part i', 'part i', 'part 1', 'wai1'], authToken)
     : false
+  const nextCheckout = `/checkout?product=wai2`
   const primaryCtaHref = hasCourseAccess
     ? '/my-courses'
     : hasPartOneAccess
       ? authToken
-        ? ENROLL_URL
-        : `/course-register?next=${encodeURIComponent(ENROLL_URL)}`
+        ? nextCheckout
+        : `/course-register?next=${encodeURIComponent(nextCheckout)}`
       : '/wai1'
   const primaryCtaLabel = hasCourseAccess
     ? 'Continue Learning'

@@ -117,11 +117,12 @@ export default async function WaiOnePage() {
         authToken
       )
     : false
+  const nextCheckout = `/checkout?product=wai1`
   const primaryCtaHref = hasCourseAccess
     ? '/my-courses'
     : authToken
-      ? ENROLL_URL
-      : `/course-register?next=${encodeURIComponent(ENROLL_URL)}`
+      ? nextCheckout
+      : `/course-register?next=${encodeURIComponent(nextCheckout)}`
   const primaryCtaLabel = hasCourseAccess ? 'Continue Learning' : authToken ? 'Enroll Now' : 'Register to Enroll'
   const localizedPrice = getLocalizedCoursePrice('wai1')
   const sanitizePrice = (value?: string | null) => {
