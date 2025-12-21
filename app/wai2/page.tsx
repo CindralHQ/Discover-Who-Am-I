@@ -107,8 +107,23 @@ export default async function WaiTwoPage() {
         authToken
       )
     : false
-  const primaryCtaHref = hasCourseAccess ? '/my-courses' : ENROLL_URL
-  const primaryCtaLabel = hasCourseAccess ? 'Continue Learning' : 'Enroll Now'
+  const hasPartOneAccess = authToken
+    ? await userHasCourseAccess(['wai part 1', 'who am i - part i', 'part i', 'part 1', 'wai1'], authToken)
+    : false
+  const primaryCtaHref = hasCourseAccess
+    ? '/my-courses'
+    : hasPartOneAccess
+      ? authToken
+        ? ENROLL_URL
+        : `/course-register?next=${encodeURIComponent(ENROLL_URL)}`
+      : '/wai1'
+  const primaryCtaLabel = hasCourseAccess
+    ? 'Continue Learning'
+    : hasPartOneAccess
+      ? authToken
+        ? 'Enroll Now'
+        : 'Register to Enroll'
+      : 'Start with Part I'
   const localizedPrice = getLocalizedCoursePrice('wai2')
   const sanitizePrice = (value?: string | null) => {
     if (!value) return null
@@ -309,6 +324,11 @@ export default async function WaiTwoPage() {
         description="Embark on a sacred journey inward. Allow hidden wisdom to awaken, let the heart open, and feel the light of the soul rise."
         buttonHref={primaryCtaHref}
         buttonLabel={primaryCtaLabel}
+        helperText={
+          !hasPartOneAccess && !hasCourseAccess
+            ? 'Part II unlocks after completing Part I – Purification.'
+            : undefined
+        }
       />
         </div>
       </div>

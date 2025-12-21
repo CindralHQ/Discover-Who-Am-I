@@ -10,6 +10,8 @@ type EnrollBlockProps = {
   buttonLabel?: string
   buttonHref?: string
   className?: string
+  disabled?: boolean
+  helperText?: string
 }
 
 const gradientByTheme: Record<ThemeName, string> = {
@@ -27,7 +29,9 @@ export function EnrollBlock({
   price,
   buttonLabel = 'Enroll Now',
   buttonHref,
-  className
+  className,
+  disabled = false,
+  helperText
 }: EnrollBlockProps) {
   const background = gradientByTheme[theme] ?? gradientByTheme.manipura
 
@@ -47,12 +51,15 @@ export function EnrollBlock({
         </div>
         <div className="flex flex-col gap-3 md:items-end md:text-right">
           <div className="text-xl font-semibold text-white">{price}</div>
-          {buttonHref ? (
+          {helperText ? (
+            <p className="text-sm text-white/80">{helperText}</p>
+          ) : null}
+          {buttonHref && !disabled ? (
             <ButtonLink theme={theme} size="lg" href={buttonHref}>
               {buttonLabel}
             </ButtonLink>
           ) : (
-            <Button theme={theme} size="lg">
+            <Button theme={theme} size="lg" disabled={disabled}>
               {buttonLabel}
             </Button>
           )}

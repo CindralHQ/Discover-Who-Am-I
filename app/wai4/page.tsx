@@ -114,8 +114,20 @@ export default async function WaiFourPage() {
         authToken
       )
     : false
+  const hasPartThreeAccess = authToken
+    ? await userHasCourseAccess(
+        ['wai part 3', 'who am i - part iii', 'part iii', 'part 3', 'wai3'],
+        authToken
+      )
+    : false
   const primaryCtaHref = hasCourseAccess ? '/my-courses' : ENROLL_URL
-  const primaryCtaLabel = hasCourseAccess ? 'Continue Learning' : 'Enroll Now'
+  const primaryCtaLabel = hasCourseAccess
+    ? 'Continue Learning'
+    : hasPartThreeAccess
+      ? authToken
+        ? 'Enroll Now'
+        : 'Register to Enroll'
+      : 'Complete Part III first'
   const localizedPrice = getLocalizedCoursePrice('wai4')
   const sanitizePrice = (value?: string | null) => {
     if (!value) return null
@@ -333,8 +345,19 @@ export default async function WaiFourPage() {
             </p>
           </>
         }
-        buttonHref={primaryCtaHref}
+        buttonHref={
+          hasCourseAccess || hasPartThreeAccess
+            ? authToken
+              ? primaryCtaHref
+              : `/course-register?next=${encodeURIComponent(primaryCtaHref)}`
+            : undefined
+        }
         buttonLabel={primaryCtaLabel}
+        helperText={
+          !hasPartThreeAccess && !hasCourseAccess
+            ? 'Part IV unlocks after completing Part III – Ascent.'
+            : undefined
+        }
       />
         </div>
       </div>

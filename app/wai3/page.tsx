@@ -121,8 +121,20 @@ export default async function WaiThreePage() {
         authToken
       )
     : false
+  const hasPartTwoAccess = authToken
+    ? await userHasCourseAccess(
+        ['wai part 2', 'who am i - part ii', 'part ii', 'part 2', 'wai2'],
+        authToken
+      )
+    : false
   const primaryCtaHref = hasCourseAccess ? '/my-courses' : ENROLL_URL
-  const primaryCtaLabel = hasCourseAccess ? 'Continue Learning' : 'Enroll Now'
+  const primaryCtaLabel = hasCourseAccess
+    ? 'Continue Learning'
+    : hasPartTwoAccess
+      ? authToken
+        ? 'Enroll Now'
+        : 'Register to Enroll'
+      : 'Complete Part II first'
   const localizedPrice = getLocalizedCoursePrice('wai3')
   const sanitizePrice = (value?: string | null) => {
     if (!value) return null
@@ -334,8 +346,19 @@ export default async function WaiThreePage() {
             </p>
           </>
         }
-        buttonHref={primaryCtaHref}
+        buttonHref={
+          hasCourseAccess || hasPartTwoAccess
+            ? authToken
+              ? primaryCtaHref
+              : `/course-register?next=${encodeURIComponent(primaryCtaHref)}`
+            : undefined
+        }
         buttonLabel={primaryCtaLabel}
+        helperText={
+          !hasPartTwoAccess && !hasCourseAccess
+            ? 'Part III unlocks after completing Part II – Blossoming.'
+            : undefined
+        }
       />
         </div>
       </div>
