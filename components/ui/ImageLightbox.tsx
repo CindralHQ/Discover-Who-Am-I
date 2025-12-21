@@ -16,8 +16,6 @@ import { createPortal } from 'react-dom'
 type LightboxContent = {
   src: StaticImageData | string
   alt: string
-  title: string
-  description: string
 }
 
 type LightboxContextValue = {
@@ -30,13 +28,27 @@ const ImageLightboxContext = createContext<LightboxContextValue | null>(null)
 export function ImageLightboxProvider({ children }: { children: ReactNode }) {
   const [content, setContent] = useState<LightboxContent | null>(null)
   const closeButtonRef = useRef<HTMLButtonElement | null>(null)
+  const [isVisible, setIsVisible] = useState(false)
+  const hideTimeoutRef = useRef<number | null>(null)
 
   const open = useCallback((nextContent: LightboxContent) => {
+    if (hideTimeoutRef.current) {
+      window.clearTimeout(hideTimeoutRef.current)
+      hideTimeoutRef.current = null
+    }
     setContent(nextContent)
+    requestAnimationFrame(() => setIsVisible(true))
   }, [])
 
   const close = useCallback(() => {
-    setContent(null)
+    setIsVisible(false)
+    if (hideTimeoutRef.current) {
+      window.clearTimeout(hideTimeoutRef.current)
+    }
+    hideTimeoutRef.current = window.setTimeout(() => {
+      setContent(null)
+      hideTimeoutRef.current = null
+    }, 220)
   }, [])
 
   useEffect(() => {
@@ -78,15 +90,18 @@ export function ImageLightboxProvider({ children }: { children: ReactNode }) {
       {typeof document !== 'undefined' && content
         ? createPortal(
             <div
-              className="fixed inset-0 z-[1200] flex items-center justify-center bg-slate-900/80 px-4 py-10"
+              className={`fixed inset-0 z-[1200] flex items-center justify-center bg-slate-900/80 px-4 py-10 transition-opacity duration-300 ease-out ${
+                isVisible ? 'opacity-100' : 'opacity-0'
+              }`}
               onClick={close}
             >
               <div
                 role="dialog"
                 aria-modal="true"
-                aria-labelledby="image-lightbox-title"
-                aria-describedby="image-lightbox-description"
-                className="relative w-full max-w-3xl overflow-hidden rounded-3xl bg-white shadow-2xl"
+                aria-label={content.alt}
+                className={`relative w-full max-w-3xl overflow-hidden rounded-3xl bg-white shadow-2xl transition-all duration-300 ease-out ${
+                  isVisible ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 translate-y-3 opacity-0'
+                }`}
                 onClick={(event) => {
                   event.stopPropagation()
                 }}
@@ -108,14 +123,6 @@ export function ImageLightboxProvider({ children }: { children: ReactNode }) {
                     className="object-contain bg-black/5"
                     sizes="(min-width: 1024px) 640px, 100vw"
                   />
-                </div>
-                <div className="space-y-2 p-6 text-slate-700">
-                  <h3 id="image-lightbox-title" className="text-2xl font-semibold text-sky-800">
-                    {content.title}
-                  </h3>
-                  <p id="image-lightbox-description" className="text-sky-700 leading-7">
-                    {content.description}
-                  </p>
                 </div>
               </div>
             </div>,

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { FontScaler } from './FontScaler'
+import { LanguageSwitcher } from './LanguageSwitcher'
 
 const audioSource = '/audio/bg.mp3'
 const TARGET_VOLUME = 0.05
@@ -182,7 +183,10 @@ export function BackgroundAudio() {
           <SpeakerIcon muted={isMuted} />
           <span className="sr-only">{isMuted ? 'Sound muted' : 'Sound playing'}</span>
         </button>
-        <FontScaler className="mt-3" />
+        <div className="mt-3 flex flex-col items-end gap-2">
+          <FontScaler />
+          <LanguageSwitcher />
+        </div>
       </div>
     </>
   )

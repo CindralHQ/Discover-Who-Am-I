@@ -198,7 +198,7 @@ export function CourseLessonAccess({
 
         {activeIsUnlocked ? children : null}
 
-        {activeLessonId && activeIsUnlocked && !disableCompletion ? (
+        {activeLessonId && activeIsUnlocked && !disableCompletion && !lockedNotice ? (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-sky-100 bg-sky-50/70 px-4 py-3 text-sm text-sky-800">
             <div className="space-y-0.5">
               <p className="font-semibold">Mark this lesson complete</p>

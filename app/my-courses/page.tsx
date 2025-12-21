@@ -44,6 +44,40 @@ function getCourseSummary(course: LearnPressCourse) {
   return stripHtml(course.excerpt?.rendered || course.content?.rendered) || ''
 }
 
+function normalise(value?: string | null) {
+  return value?.toLowerCase() ?? ''
+}
+
+function isPartOneCourse(course: LearnPressCourse) {
+  const fields = [
+    course.slug,
+    course.name,
+    course.title?.rendered
+  ].map(normalise)
+
+  return fields.some((text) =>
+    text?.includes('part 1') ||
+    text?.includes('part i') ||
+    text?.includes('wai1') ||
+    text?.includes('purification')
+  )
+}
+
+function isPartTwoCourse(course: LearnPressCourse) {
+  const fields = [
+    course.slug,
+    course.name,
+    course.title?.rendered
+  ].map(normalise)
+
+  return fields.some((text) =>
+    text?.includes('part 2') ||
+    text?.includes('part ii') ||
+    text?.includes('wai2') ||
+    text?.includes('blossoming')
+  )
+}
+
 export default async function MyCoursesPage() {
   const cookieStore = cookies()
   const authToken = cookieStore.get(LEARNPRESS_TOKEN_COOKIE)?.value
@@ -125,10 +159,15 @@ export default async function MyCoursesPage() {
         </div>
       ) : (
         <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {courses.map((course) => {
+          {(() => {
+            const hasPartOne = courses.some((course) => isPartOneCourse(course))
+
+            return courses.map((course) => {
             const title = getCourseTitle(course)
             const summary = getCourseSummary(course)
-            const learnUrl = `/my-courses/${course.id}`
+            const requiresPartOne = isPartTwoCourse(course)
+            const canAccess = !requiresPartOne || hasPartOne
+            const learnUrl = canAccess ? `/my-courses/${course.id}` : ''
             const statusLabel = course.status ? course.status.replaceAll('_', ' ') : 'course'
 
             return (
@@ -145,17 +184,33 @@ export default async function MyCoursesPage() {
                 ) : (
                   <div className="flex-1" />
                 )}
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Link
-            href={learnUrl}
-            className="inline-flex flex-1 min-w-[140px] items-center justify-center rounded-2xl border border-sky-200 px-4 py-2 text-sm font-semibold text-sky-900 transition hover:bg-sky-50"
-          >
-            Open course
-                  </Link>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  {canAccess ? (
+                    <Link
+                      href={learnUrl}
+                      className="inline-flex flex-1 min-w-[140px] items-center justify-center rounded-2xl border border-sky-200 px-4 py-2 text-sm font-semibold text-sky-900 transition hover:bg-sky-50"
+                    >
+                      Open course
+                    </Link>
+                  ) : (
+                    <div className="flex w-full flex-col gap-2">
+                      <button
+                        type="button"
+                        className="inline-flex w-full items-center justify-center rounded-2xl border border-sky-200 px-4 py-2 text-sm font-semibold text-sky-400"
+                        aria-disabled
+                      >
+                        Unlock after Part I
+                      </button>
+                      <p className="text-xs text-sky-500">
+                        Complete Part I – Purification to access this course.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </li>
             )
-          })}
+            })
+          })()}
         </ul>
       )}
     </div>
