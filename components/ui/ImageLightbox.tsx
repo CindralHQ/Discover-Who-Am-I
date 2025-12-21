@@ -16,6 +16,8 @@ import { createPortal } from 'react-dom'
 type LightboxContent = {
   src: StaticImageData | string
   alt: string
+  title?: string
+  description?: string
 }
 
 type LightboxContextValue = {
