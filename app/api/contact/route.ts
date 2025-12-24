@@ -26,7 +26,7 @@ export async function POST(req: Request) {
 
         const mailOptions = {
             from: process.env.SMTP_USER || '"Discover Who Am I" <noreply@example.com>',
-            to: 'shibani.sachdeva@gmail.com',
+            to: 'raoaditya5050@gmail.com',
             subject: `Contact Request: ${subject}`,
             text: `
         Name: ${name}
